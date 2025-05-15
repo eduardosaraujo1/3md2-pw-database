@@ -26,3 +26,15 @@ INSERT INTO tb_usuario (login, email, senha) VALUES
         "senha" => $senha
     ]
 );
+
+$users = Connection::fetch("SELECT * FROM tb_usuario");
+
+foreach ($users as $key => $value) {
+    foreach ($value as $key2 => $value2) {
+        if (is_int($key2)) {
+            unset($users[$key][$key2]);
+        }
+    }
+}
+
+var_dump($users);

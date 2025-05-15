@@ -48,7 +48,7 @@ class Connection
         return $pdo->query($query);
     }
 
-    public static function query(string $query, array $params)
+    public static function query(string $query, array $params = [])
     {
         $pdo = self::pdo();
 
@@ -62,6 +62,24 @@ class Connection
             throw new \Exception("Statement create error: execute command failed");
         }
 
-        return $stmt?->rowCount();
+        return $stmt->rowCount();
+    }
+
+    public static function fetch(string $query, array $params = [])
+    {
+        $pdo = self::pdo();
+
+        $smt = $pdo->prepare($query);
+
+        if (!$smt) {
+            throw new \Exception("Statement create error: prepare command failed");
+
+        }
+
+        if (!$smt->execute($params)) {
+            throw new \Exception("Statement create error: execute command failed");
+        }
+
+        return $smt->fetchAll();
     }
 }
