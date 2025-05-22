@@ -38,3 +38,15 @@ foreach ($users as $key => $value) {
 }
 
 var_dump($users);
+
+/**
+[WWWWWWWWWWWWWWWW]
+f(i) = offset + i - length
+-length <= f(i) <= 
+0 <= offset <= length-1
+[WWWWWWWWWWWWWWWW]
+f(i) = 15 + i - offset
+<= f(i) <=
+<= offset <= 
+ 
+ */

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="./lib/jquery.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script
+      src="https://unpkg.com/htmx.org@2.0.4"
+      integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
+    <div class="w-screen h-screen bg-neutral-200">
+      <form
+        hx-post="php/contato/store.php"
+        hx-target="#output"
+        hx-swap="innerHTML"
+        enctype="multipart/form-data"
+        hx-encoding="multipart/form-data"
+        method="post"
+        class="mx-auto w-[48rem] bg-white h-full shadow p-2 text-center overflow-auto"
+      >
+        <div
+          class="p-2 border-black shadow border-1 *:border-b *:border-b-gray-400 *:pb-2 *:pt-2"
+        >
+          <div>
+            <label for="nome">Nome: </label>
+            <input
+              type="text"
+              id="nome"
+              name="nome"
+              class="p-1 border rounded border-neutral-500"
+              required
+            />
+          </div>
+          <div>
+            <label for="login">Login: </label>
+            <input
+              type="text"
+              id="login"
+              name="login"
+              class="p-1 border rounded border-neutral-500"
+              required
+            />
+          </div>
+          <div>
+            <label for="senha">Senha: </label>
+            <input
+              type="password"
+              id="senha"
+              name="senha"
+              class="p-1 border rounded border-neutral-500"
+              required
+            />
+          </div>
+          <div>
+            <label for="email">E-mail: </label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              class="p-1 border rounded border-neutral-500"
+              required
+            />
+          </div>
+          <div>
+            <label for="telefone">Telefone: </label>
+            <input
+              type="text"
+              id="telefone"
+              name="telefone"
+              class="p-1 border rounded border-neutral-500"
+              required
+            />
+          </div>
+          <div>
+            <label for="foto">Foto: </label>
+            <input
+              type="file"
+              id="foto"
+              name="foto"
+              accept="image/png, image/jpg"
+              class="p-1 border rounded border-neutral-500"
+            />
+          </div>
+          <button
+            type="submit"
+            id="submit"
+            class="px-4 py-1 mt-4 border border-black cursor-pointer"
+          >
+            Enviar
+          </button>
+        </div>
+        <h2 class="my-2 font-serif text-left">
+          Resposta de '/php/contato/store.php' AJAX:
+        </h2>
+        <pre
+          class="min-w-full text-left border border-neutral-500 min-h-96 w-fit"
+          id="output"
+        ></pre>
+      </form>
+    </div>
+  </body>
+</html>
