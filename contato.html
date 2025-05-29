@@ -11,10 +11,50 @@
       integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+"
       crossorigin="anonymous"
     ></script>
+    <script>
+      function isValidPassword(password) {
+        if (typeof password !== "string") return false;
+
+        const minLength = 8;
+        const hasUpperCase = /[A-Z]/;
+        const hasNumber = /\d/;
+        const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>_\-\\\/[\];'`~+=]/;
+
+        return (
+          password.length >= minLength &&
+          hasUpperCase.test(password) &&
+          hasNumber.test(password) &&
+          hasSpecialChar.test(password)
+        );
+      }
+      function isFormValid() {
+        // E-mail validation
+        const emailValid = $("#email").val().includes("@");
+
+        // Password validation
+        const passwordValid = isValidPassword($("#senha").val());
+
+        // Baseline validation
+        const valid = $("#mainForm")[0].checkValidity();
+
+        return emailValid && passwordValid && valid;
+      }
+
+      function updateForm() {
+        const valid = isFormValid();
+        $("#submit").prop("disabled", !valid);
+      }
+
+      $(() => {
+        $("input").on("keyup", updateForm);
+        updateForm();
+      });
+    </script>
   </head>
   <body>
     <div class="w-screen h-screen bg-neutral-200">
       <form
+        id="mainForm"
         hx-post="php/contato/store.php"
         hx-target="#output"
         hx-swap="innerHTML"
@@ -24,9 +64,7 @@
         method="post"
         class="mx-auto w-[48rem] bg-white h-full shadow p-2 text-center overflow-auto"
       >
-        <div
-          class="p-2 border-black shadow border-1 *:border-b *:border-b-gray-400 *:pb-2 *:pt-2"
-        >
+        <div class="p-2 shadow *:border-b *:border-b-gray-400 *:pb-2 *:pt-2">
           <div>
             <label for="nome">Nome: </label>
             <input
@@ -90,7 +128,8 @@
           <button
             type="submit"
             id="submit"
-            class="px-4 py-1 mt-4 border border-black cursor-pointer"
+            class="mt-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 disabled:text-white disabled:bg-blue-400 dark:bg-blue-500 disabled:cursor-not-allowed disabled:font-medium disabled:rounded-lg disabled:text-sm disabled:px-5 disabled:py-2.5 disabled:text-center"
+            disabled
           >
             Enviar
           </button>
