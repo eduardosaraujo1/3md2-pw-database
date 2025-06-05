@@ -15,6 +15,7 @@
       let errors = [];
       function isValidPassword(password) {
         if (typeof password !== "string") return false;
+        let valid = true;
 
         const minLength = 8;
         const hasUpperCase = /[A-Z]/;
@@ -22,30 +23,60 @@
         const hasNumber = /\d/;
         const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>_\-\\\/[\];'`~+=]/;
 
-        return (
-          password.length >= minLength &&
-          hasUpperCase.test(password) &&
-          hasNumber.test(password) &&
-          hasSpecialChar.test(password) &&
-          hasLowerCase.test(password)
-        );
+        if (password.length < minLength) {
+          errors.push("Senha: sua senha deve conter no mínimo 8 caracteres");
+          valid = false;
+        }
+        if (!hasUpperCase.test(password)) {
+          errors.push("Senha: deve conter pelo menos uma letra maiúscula");
+          valid = false;
+        }
+        if (!hasNumber.test(password)) {
+          errors.push("Senha: deve conter pelo menos um número");
+          valid = false;
+        }
+        if (!hasSpecialChar.test(password)) {
+          errors.push("Senha: deve conter pelo menos um caractere especial");
+          valid = false;
+        }
+        if (!hasLowerCase.test(password)) {
+          errors.push("Senha: deve conter pelo menos uma letra minúscula");
+          valid = false;
+        }
+
+        return valid;
       }
       function isFormValid() {
-        // errors = [];
-
-        // E-mail validation
-        const emailValid = $("#email").val().includes("@");
-
-        // Password validation
-        const passwordValid = isValidPassword($("#senha").val());
-
-        // Password Confirmation Confirmation
-        const passwordEqual = $("#senha").val() === $("#confirm_senha").val();
+        errors = [];
+        let valid = true;
 
         // Baseline form validation
         const base = $("#mainForm")[0].checkValidity();
+        if (!base) {
+          errors.push("Geral: Por favor preencha os campos obrigatórios.");
+          valid = false;
+        }
 
-        const valid = emailValid && passwordValid && passwordEqual && base;
+        // E-mail validation
+        const emailValid = $("#email").val().includes("@");
+        if (!emailValid) {
+          errors.push("E-mail: Insira um e-mail válido");
+          valid = false;
+        }
+
+        // Password validation
+        const passwordValid = isValidPassword($("#senha").val());
+        if (!passwordValid) {
+          valid = false;
+        }
+
+        // Password Confirmation Confirmation
+        const passwordEqual = $("#senha").val() === $("#confirm_senha").val();
+        if (!passwordEqual) {
+          errors.push("Confirmar Senha: senhas não coincidem");
+          valid = false;
+        }
+
         return valid;
       }
 
