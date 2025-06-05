@@ -15,6 +15,8 @@ $login = $_POST["login"];
 $email = $_POST["email"];
 $senha = $_POST["senha"];
 
+// TODO: check if login or e-mail already exists
+
 // Insert
 Connection::query(
     query: "
@@ -38,15 +40,3 @@ foreach ($users as $key => $value) {
 }
 
 var_dump($users);
-
-/**
-[WWWWWWWWWWWWWWWW]
-f(i) = offset + i - length
--length <= f(i) <= 
-0 <= offset <= length-1
-[WWWWWWWWWWWWWWWW]
-f(i) = 15 + i - offset
-<= f(i) <=
-<= offset <= 
- 
- */

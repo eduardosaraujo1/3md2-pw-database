@@ -12,11 +12,13 @@
       crossorigin="anonymous"
     ></script>
     <script>
+      let errors = [];
       function isValidPassword(password) {
         if (typeof password !== "string") return false;
 
         const minLength = 8;
         const hasUpperCase = /[A-Z]/;
+        const hasLowerCase = /[a-z]/;
         const hasNumber = /\d/;
         const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>_\-\\\/[\];'`~+=]/;
 
@@ -24,25 +26,49 @@
           password.length >= minLength &&
           hasUpperCase.test(password) &&
           hasNumber.test(password) &&
-          hasSpecialChar.test(password)
+          hasSpecialChar.test(password) &&
+          hasLowerCase.test(password)
         );
       }
       function isFormValid() {
+        // errors = [];
+
         // E-mail validation
         const emailValid = $("#email").val().includes("@");
 
         // Password validation
         const passwordValid = isValidPassword($("#senha").val());
 
-        // Baseline validation
-        const valid = $("#mainForm")[0].checkValidity();
+        // Password Confirmation Confirmation
+        const passwordEqual = $("#senha").val() === $("#confirm_senha").val();
 
-        return emailValid && passwordValid && valid;
+        // Baseline form validation
+        const base = $("#mainForm")[0].checkValidity();
+
+        const valid = emailValid && passwordValid && passwordEqual && base;
+        return valid;
       }
 
       function updateForm() {
+        // Validate
         const valid = isFormValid();
         $("#submit").prop("disabled", !valid);
+
+        // Update List
+        const container = $("#errorContainer");
+        container.empty();
+
+        for (const err of errors) {
+          container.append(`<li>${err}</li>`);
+        }
+
+        // Show errors that happened on validation
+        const show_on_error = $(".js-show-on-error");
+        if (errors.length === 0) {
+          show_on_error.hide();
+        } else {
+          show_on_error.show();
+        }
       }
 
       $(() => {
@@ -64,7 +90,20 @@
         method="post"
         class="mx-auto w-[48rem] bg-white h-full shadow p-2 text-center overflow-auto"
       >
-        <div class="p-2 shadow *:border-b *:border-b-gray-400 *:pb-2 *:pt-2">
+        <div
+          class="px-2 pb-3 overflow-y-auto text-left bg-red-300 max-h-48 js-show-on-error"
+        >
+          <h3 class="sticky top-0 pt-2 font-bold text-red-800 bg-red-300">
+            Erros de Validação
+          </h3>
+          <ul class="*:text-red-800 list-disc ml-4" id="errorContainer">
+            <li>Item1</li>
+            <li>Item2</li>
+          </ul>
+        </div>
+        <div
+          class="p-2 shadow *:border-b *:border-b-gray-400 *:pb-2 *:pt-2 *:flex *:gap-2"
+        >
           <div>
             <label for="nome">Nome: </label>
             <input
@@ -91,6 +130,15 @@
               type="password"
               id="senha"
               name="senha"
+              class="p-1 border rounded border-neutral-500"
+              required
+            />
+          </div>
+          <div>
+            <label for="senha">Confirmar Senha: </label>
+            <input
+              type="password"
+              id="confirm_senha"
               class="p-1 border rounded border-neutral-500"
               required
             />
