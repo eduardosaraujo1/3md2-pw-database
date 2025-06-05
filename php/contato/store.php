@@ -27,6 +27,27 @@ $email = $_POST["email"];
 $senha = $_POST["senha"];
 $telefone = $_POST["telefone"];
 
+$existingContatos = Connection::fetch(
+    "SELECT * FROM tb_contato WHERE login = :login OR email = :email",
+    [
+        "login" => $login,
+        "email" => $email
+    ]
+);
+
+if (count($existingContatos) > 0) {
+    foreach ($existingContatos as $contato) {
+        if ($contato['login'] === $login) {
+            echo json_encode(["error" => "Login já está em uso"]);
+            exit;
+        }
+        if ($contato['email'] === $email) {
+            echo json_encode(["error" => "Email já está em uso"]);
+            exit;
+        }
+    }
+}
+
 // store uploaded photo
 $photo_path = null;
 
