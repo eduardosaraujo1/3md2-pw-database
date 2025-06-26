@@ -1,7 +1,0 @@
-services:
-  web:
-    image: webdevops/php-apache:7.4-alpine
-    ports:
-      - "4500:80"
-    volumes:
-      - .:/app
