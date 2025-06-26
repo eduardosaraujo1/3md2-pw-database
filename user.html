@@ -6,15 +6,45 @@
     <title>Document</title>
     <script src="./lib/jquery.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <script
+    <!-- <script
       src="https://unpkg.com/htmx.org@2.0.4"
       integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+"
       crossorigin="anonymous"
-    ></script>
+    ></script> -->
+    <script>
+      $(() => {
+        $("input").on("keyup", updateForm);
+        updateForm();
+
+        $("form").on("submit", (e) => {
+          e.preventDefault();
+
+          const form = $(e.currentTarget);
+          const data = form.serialize();
+
+          $.ajax({
+            url: form.attr("action"),
+            data: data,
+            method: form.attr("method"),
+            dataType: "html",
+          })
+            .done((content) => {
+              $("#output").html(content);
+            })
+            .fail((content) => {
+              $("#output").html(`
+              Ocorreu uma falha nessa requisição
+            `);
+            });
+        });
+      });
+    </script>
   </head>
   <body>
     <div class="w-screen h-screen bg-neutral-200">
       <form
+        action="php/user/store.php"
+        method="post"
         hx-post="php/user/store.php"
         hx-target="#output"
         hx-swap="innerHTML"
