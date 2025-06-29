@@ -1,254 +1,95 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-    <script src="./lib/jquery.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <style>
-      ::-webkit-scrollbar-track {
-        background-color: #f5f5f5;
-      }
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Contato</title>
 
-      ::-webkit-scrollbar {
-        width: 6px;
-        background-color: #f5f5f5;
-      }
+        <link rel="stylesheet" href="css/contato.css" />
 
-      ::-webkit-scrollbar-thumb {
-        background-color: hsl(0, 0%, 60%);
-      }
-    </style>
-    <!--<script
-      src="https://unpkg.com/htmx.org@2.0.4"
-      integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+"
-      crossorigin="anonymous"
-    ></script> -->
-    <script>
-      let errors = [];
-      function isValidPassword(password) {
-        if (typeof password !== "string") return false;
-        let valid = true;
-
-        const minLength = 8;
-        const hasUpperCase = /[A-Z]/;
-        const hasLowerCase = /[a-z]/;
-        const hasNumber = /\d/;
-        const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>_\-\\\/[\];'`~+=]/;
-
-        if (password.length < minLength) {
-          errors.push("Senha: sua senha deve conter no mínimo 8 caracteres");
-          valid = false;
-        }
-        if (!hasUpperCase.test(password)) {
-          errors.push("Senha: deve conter pelo menos uma letra maiúscula");
-          valid = false;
-        }
-        if (!hasNumber.test(password)) {
-          errors.push("Senha: deve conter pelo menos um número");
-          valid = false;
-        }
-        if (!hasSpecialChar.test(password)) {
-          errors.push("Senha: deve conter pelo menos um caractere especial");
-          valid = false;
-        }
-        if (!hasLowerCase.test(password)) {
-          errors.push("Senha: deve conter pelo menos uma letra minúscula");
-          valid = false;
-        }
-
-        return valid;
-      }
-
-      function isFormValid() {
-        errors = [];
-        let valid = true;
-
-        const base = $("#mainForm")[0].checkValidity();
-        if (!base) {
-          errors.push("Geral: Por favor preencha os campos obrigatórios.");
-          valid = false;
-        }
-
-        const emailValid = $("#email").val().includes("@");
-        if (!emailValid) {
-          errors.push("E-mail: Insira um e-mail válido");
-          valid = false;
-        }
-
-        const passwordValid = isValidPassword($("#senha").val());
-        if (!passwordValid) {
-          valid = false;
-        }
-
-        const passwordEqual = $("#senha").val() === $("#confirm_senha").val();
-        if (!passwordEqual) {
-          errors.push("Confirmar Senha: senhas não coincidem");
-          valid = false;
-        }
-
-        return valid;
-      }
-
-      function updateForm() {
-        const valid = isFormValid();
-        $("#submit").prop("disabled", !valid);
-
-        const container = $("#errorContainer");
-        container.empty();
-
-        for (const err of errors) {
-          container.append(`<li>${err}</li>`);
-        }
-
-        const show_on_error = $(".js-show-on-error");
-        if (errors.length === 0) {
-          show_on_error.hide();
-        } else {
-          show_on_error.show();
-        }
-      }
-
-      $(() => {
-        $("input").on("keyup", updateForm);
-        updateForm();
-
-        $("form").on("submit", (e) => {
-          e.preventDefault();
-
-          const form = $(e.currentTarget);
-          const data = form.serialize();
-
-          $.ajax({
-            url: form.attr("action"),
-            data: data,
-            method: form.attr("method"),
-            dataType: "html",
-          })
-            .done((content) => {
-              $("#output").html(content);
-            })
-            .fail((content) => {
-              $("#output").html(`
-              Ocorreu uma falha nessa requisição
-            `);
-            });
-        });
-      });
-    </script>
-  </head>
-  <body>
-    <div class="w-screen h-screen bg-neutral-200">
-      <form
-        id="mainForm"
-        hx-post="php/contato/store.php"
-        hx-target="#output"
-        hx-swap="innerHTML"
-        hx-encoding="multipart/form-data"
-        action="php/contato/store.php"
-        enctype="multipart/form-data"
-        method="post"
-        class="mx-auto w-[48rem] bg-white h-full shadow p-2 text-center overflow-auto"
-      >
-        <div
-          class="px-2 pb-3 overflow-y-auto text-left bg-red-300 max-h-48 js-show-on-error"
-          style="display: none"
-        >
-          <h3 class="sticky top-0 pt-2 font-bold text-red-800 bg-red-300">
-            Erros de Validação
-          </h3>
-          <ul class="*:text-red-800 list-disc ml-4" id="errorContainer"></ul>
+        <script src="./lib/jquery.js"></script>
+        <script src="js/contato.js"></script>
+    </head>
+    <body>
+        <div class="bg-red-900 page-container">
+            <form
+                id="mainForm"
+                hx-post="php/contato/store.php"
+                hx-target="#output"
+                hx-swap="innerHTML"
+                hx-encoding="multipart/form-data"
+                action="php/contato/store.php"
+                enctype="multipart/form-data"
+                method="post"
+                class="main-form"
+            >
+                <div class="error-container">
+                    <h3 class="error-title">Erros de Validação</h3>
+                    <ul class="error-list" id="errorContainer"></ul>
+                </div>
+                <h2 class="response-title">Cadastrar Contato</h2>
+                <div class="form-content">
+                    <div class="form-field">
+                        <label for="nome" class="field-label">Nome</label>
+                        <input type="text" id="nome" name="nome" class="text-input" placeholder="Nome" required />
+                        <p class="field-error" data-field="nome">Error Message!</p>
+                    </div>
+                    <div class="form-field">
+                        <label for="login" class="field-label">Login</label>
+                        <input type="text" id="login" name="login" class="text-input" placeholder="Login" required />
+                        <p class="field-error" data-field="login">Error Message!</p>
+                    </div>
+                    <div class="flex w-full g-2">
+                        <div class="flex-1 form-field">
+                            <label for="senha" class="field-label">Senha</label>
+                            <input
+                                type="password"
+                                id="senha"
+                                name="senha"
+                                class="text-input"
+                                placeholder="Senha"
+                                required
+                            />
+                            <p class="field-error" data-field="senha">Error Message!</p>
+                        </div>
+                        <div class="flex-1 form-field">
+                            <label for="confirm_senha" class="field-label">Confirmar Senha</label>
+                            <input
+                                type="password"
+                                id="confirm_senha"
+                                class="text-input"
+                                placeholder="Confirmar Senha"
+                                required
+                            />
+                            <p class="field-error" data-field="confirm_senha">Error Message!</p>
+                        </div>
+                    </div>
+                    <div class="form-field">
+                        <label for="email" class="field-label">E-mail</label>
+                        <input type="email" id="email" name="email" class="text-input" placeholder="E-mail" required />
+                        <p class="field-error" data-field="email">Error Message!</p>
+                    </div>
+                    <div class="form-field">
+                        <label for="telefone" class="field-label">Telefone</label>
+                        <input
+                            type="text"
+                            id="telefone"
+                            name="telefone"
+                            class="text-input"
+                            placeholder="Telefone"
+                            required
+                        />
+                        <p class="field-error" data-field="telefone">Error Message!</p>
+                    </div>
+                    <div class="form-field">
+                        <label class="field-label" for="user_avatar">Upload file</label>
+                        <input type="file" class="file-input" id="foto" name="foto" />
+                    </div>
+                    <button type="submit" id="submit" class="submit-button" disabled>Enviar</button>
+                </div>
+                <h2 class="response-title">Resposta de '/php/contato/store.php' AJAX:</h2>
+                <pre class="response-output" id="output"></pre>
+            </form>
         </div>
-        <div
-          class="p-2 shadow *:border-b *:border-b-gray-400 *:pb-2 *:pt-2 *:flex *:gap-2"
-        >
-          <div>
-            <label for="nome">Nome: </label>
-            <input
-              type="text"
-              id="nome"
-              name="nome"
-              class="p-1 border rounded border-neutral-500"
-              required
-            />
-          </div>
-          <div>
-            <label for="login">Login: </label>
-            <input
-              type="text"
-              id="login"
-              name="login"
-              class="p-1 border rounded border-neutral-500"
-              required
-            />
-          </div>
-          <div>
-            <label for="senha">Senha: </label>
-            <input
-              type="password"
-              id="senha"
-              name="senha"
-              class="p-1 border rounded border-neutral-500"
-              required
-            />
-          </div>
-          <div>
-            <label for="senha">Confirmar Senha: </label>
-            <input
-              type="password"
-              id="confirm_senha"
-              class="p-1 border rounded border-neutral-500"
-              required
-            />
-          </div>
-          <div>
-            <label for="email">E-mail: </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              class="p-1 border rounded border-neutral-500"
-              required
-            />
-          </div>
-          <div>
-            <label for="telefone">Telefone: </label>
-            <input
-              type="text"
-              id="telefone"
-              name="telefone"
-              class="p-1 border rounded border-neutral-500"
-              required
-            />
-          </div>
-          <div>
-            <label for="foto">Foto: </label>
-            <input
-              type="file"
-              id="foto"
-              name="foto"
-              accept="image/png, image/jpg"
-              class="p-1 border rounded border-neutral-500"
-            />
-          </div>
-          <button
-            type="submit"
-            id="submit"
-            class="mt-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 disabled:text-white disabled:bg-blue-400 dark:bg-blue-500 disabled:cursor-not-allowed disabled:font-medium disabled:rounded-lg disabled:text-sm disabled:px-5 disabled:py-2.5 disabled:text-center"
-            disabled
-          >
-            Enviar
-          </button>
-        </div>
-        <h2 class="my-2 font-serif text-left">
-          Resposta de '/php/contato/store.php' AJAX:
-        </h2>
-        <pre
-          class="min-w-full text-left border border-neutral-500 min-h-96 w-fit"
-          id="output"
-        ></pre>
-      </form>
-    </div>
-  </body>
+    </body>
 </html>
