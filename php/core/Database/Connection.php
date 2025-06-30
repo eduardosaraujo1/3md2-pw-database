@@ -14,18 +14,20 @@ class Connection
     {
     }
 
-    public static function create(array $args): void
+    public static function create(): void
     {
+        require __DIR__ . '/../config.php';
+
         if (!isset(self::$_instance)) {
             self::$_instance = new self();
         }
 
         $instance = self::$_instance;
-        $host = $args["host"];
-        $username = $args["username"];
-        $password = $args["password"];
-        $database = $args["database"];
-        $port = $args["port"];
+        $host = $CONFIG["host"];
+        $username = $CONFIG["username"];
+        $password = $CONFIG["password"];
+        $database = $CONFIG["database"];
+        $port = $CONFIG["port"];
 
         try {
             $conn = new PDO("mysql:host=$host;dbname=$database;port=$port", $username, $password);

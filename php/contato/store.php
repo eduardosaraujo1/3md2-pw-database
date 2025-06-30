@@ -12,13 +12,7 @@ function uuidv4(): string
     return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
 }
 
-Connection::create([
-    "host" => "localhost",
-    "username" => "root",
-    "password" => "root",
-    "database" => "learning",
-    "port" => "3306"
-]);
+Connection::create();
 
 // Collect
 $nome = $_POST["nome"];
@@ -50,8 +44,8 @@ if (count($existingContatos) > 0) {
 
 // store uploaded photo
 $photo_path = null;
-
 if (isset($_FILES["foto"]) && $_FILES["foto"]["error"] === 0) {
+    // collect data
     $foto = $_FILES["foto"];
     $tmp = $foto["tmp_name"];
     $originalName = $foto["name"];
@@ -62,11 +56,17 @@ if (isset($_FILES["foto"]) && $_FILES["foto"]["error"] === 0) {
         die("Tipo de arquivo não permitido.");
     }
 
+    // filename must be random UUID
     $filename = uuidv4() . "." . $extension;
-
-    $relativePath = "/storage/contato/foto/" . $filename;
+    $relativePath = "/storage/contato/foto/$filename";
     $targetDir = $_SERVER['DOCUMENT_ROOT'] . "/storage/contato/foto/";
     $targetPath = $_SERVER['DOCUMENT_ROOT'] . $relativePath;
+
+    if (!is_dir($targetDir)) {
+        if (!mkdir($targetDir, 0755, true)) {
+            die("Falha ao criar o diretório.");
+        }
+    }
 
     if (move_uploaded_file($tmp, $targetPath)) {
         $photo_path = $relativePath;

@@ -2,13 +2,7 @@
 require '../core/autoload.php';
 use Core\Database\Connection;
 
-Connection::create([
-    "host" => "localhost",
-    "username" => "root",
-    "password" => "root",
-    "database" => "learning",
-    "port" => "3306"
-]);
+Connection::create();
 
 // Collect
 $login = $_POST["login"];

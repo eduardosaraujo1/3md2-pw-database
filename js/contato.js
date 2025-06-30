@@ -1,7 +1,7 @@
-let errors = [];
+let errors = {};
+
 function isValidPassword(password) {
     if (typeof password !== "string") return false;
-    let valid = true;
 
     const minLength = 8;
     const hasUpperCase = /[A-Z]/;
@@ -10,42 +10,59 @@ function isValidPassword(password) {
     const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>_\-\\\/[\];'`~+=]/;
 
     if (password.length < minLength) {
-        errors.push("Senha: sua senha deve conter no mínimo 8 caracteres");
-        valid = false;
+        errors["senha"] = "Senha sua senha deve conter no mínimo 8 caracteres";
+        return false;
     }
     if (!hasUpperCase.test(password)) {
-        errors.push("Senha: deve conter pelo menos uma letra maiúscula");
-        valid = false;
+        errors["senha"] = "Senha deve conter pelo menos uma letra maiúscula";
+        return false;
     }
     if (!hasNumber.test(password)) {
-        errors.push("Senha: deve conter pelo menos um número");
-        valid = false;
+        errors["senha"] = "Senha deve conter pelo menos um número";
+        return false;
     }
     if (!hasSpecialChar.test(password)) {
-        errors.push("Senha: deve conter pelo menos um caractere especial");
-        valid = false;
+        errors["senha"] = "Senha deve conter pelo menos um caractere especial";
+        return false;
     }
     if (!hasLowerCase.test(password)) {
-        errors.push("Senha: deve conter pelo menos uma letra minúscula");
-        valid = false;
+        errors["senha"] = "Senha deve conter pelo menos uma letra minúscula";
+        return false;
     }
 
-    return valid;
+    return true;
 }
 
 function isFormValid() {
-    errors = [];
     let valid = true;
+    errors = {};
 
     const base = $("#mainForm")[0].checkValidity();
     if (!base) {
-        errors.push("Geral: Por favor preencha os campos obrigatórios.");
+        valid = false;
+    }
+
+    const nome = $("#nome").val().trim();
+    if (!nome) {
+        errors["nome"] = "Esse campo é obrigatório";
+        valid = false;
+    }
+
+    const login = $("#login").val().trim();
+    if (!login) {
+        errors["login"] = "Esse campo é obrigatório";
+        valid = false;
+    }
+
+    const telefone = $("#telefone").val().trim();
+    if (!telefone) {
+        errors["telefone"] = "Esse campo é obrigatório";
         valid = false;
     }
 
     const emailValid = $("#email").val().includes("@");
     if (!emailValid) {
-        errors.push("E-mail: Insira um e-mail válido");
+        errors["email"] = "Insira um e-mail válido";
         valid = false;
     }
 
@@ -56,55 +73,53 @@ function isFormValid() {
 
     const passwordEqual = $("#senha").val() === $("#confirm_senha").val();
     if (!passwordEqual) {
-        errors.push("Confirmar Senha: senhas não coincidem");
+        errors["confirm_senha"] = "Senhas não coincidem";
         valid = false;
     }
 
     return valid;
 }
 
+function displayErrors(errs) {
+    $(".field-error").hide();
+    for (const field in errs) {
+        if (Object.prototype.hasOwnProperty.call(errs, field)) {
+            const errorVal = errs[field];
+            $(`[data-field=${field}]`).show().html(errorVal);
+        }
+    }
+}
+
 function updateForm() {
     const valid = isFormValid();
     $("#submit").prop("disabled", !valid);
-
-    const container = $("#errorContainer");
-    container.empty();
-
-    for (const err of errors) {
-        container.append(`<li>${err}</li>`);
-    }
-
-    const show_on_error = $(".js-show-on-error");
-    if (errors.length === 0) {
-        show_on_error.hide();
-    } else {
-        show_on_error.show();
-    }
+    displayErrors(errors);
 }
 
 $(() => {
     $("input").on("keyup", updateForm);
-    updateForm();
+    // updateForm();
 
     $("form").on("submit", (e) => {
         e.preventDefault();
-
-        const form = $(e.currentTarget);
-        const data = form.serialize();
+        const form = $(e.currentTarget)[0];
+        const formData = new FormData(form);
 
         $.ajax({
-            url: form.attr("action"),
-            data: data,
-            method: form.attr("method"),
+            url: $(e.currentTarget).attr("action"),
+            data: formData,
+            method: $(e.currentTarget).attr("method"),
+            processData: false,
+            contentType: false,
             dataType: "html",
         })
             .done((content) => {
                 $("#output").html(content);
             })
-            .fail((content) => {
+            .fail(() => {
                 $("#output").html(`
-              Ocorreu uma falha nessa requisição
-            `);
+            Ocorreu uma falha nessa requisição
+        `);
             });
     });
 });

@@ -19,6 +19,3 @@ CREATE TABLE tb_contato(
     telefone VARCHAR(255) NOT NULL,
     foto VARCHAR(255)
 );
-
-INSERT INTO tb_usuario (login, email, senha) VALUES
-('didi', 'didi@gmail.com', '1234');

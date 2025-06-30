@@ -87,8 +87,6 @@ body {
 
 .text-input:focus {
     outline: none;
-    ring: 4px;
-    ring-color: var(--color-blue-300);
     border-color: var(--color-blue-500);
 }
 
@@ -121,13 +119,13 @@ input[type="file"]::file-selector-button {
 
 .field-error {
     display: none;
-    margin-top: 0.5rem;
+    margin-top: 0;
     font-size: 0.875rem;
     color: var(--color-red-600);
 }
 
 .submit-button {
-    margin-top: 0.5rem;
+    margin-top: 1.5rem;
     color: var(--color-white);
     background-color: var(--color-blue-700);
     font-weight: 500;
@@ -146,8 +144,6 @@ input[type="file"]::file-selector-button {
 
 .submit-button:focus {
     outline: none;
-    ring: 4px;
-    ring-color: var(--color-blue-300);
 }
 
 .submit-button:disabled {
@@ -188,6 +184,14 @@ input[type="file"]::file-selector-button {
 
 .flex-1 {
     flex: 1;
+}
+
+.w-full {
+    width: 100%;
+}
+
+.justify-end {
+    justify-content: end;
 }
 
 ::-webkit-scrollbar-track {
