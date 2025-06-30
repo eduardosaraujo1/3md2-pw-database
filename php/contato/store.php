@@ -58,8 +58,8 @@ if (isset($_FILES["foto"]) && $_FILES["foto"]["error"] === 0) {
 
     // filename must be random UUID
     $filename = uuidv4() . "." . $extension;
-    $relativePath = "/storage/contato/foto/$filename";
-    $targetDir = $_SERVER['DOCUMENT_ROOT'] . "/storage/contato/foto/";
+    $relativePath = "/storage/$filename";
+    $targetDir = $_SERVER['DOCUMENT_ROOT'] . "/storage/";
     $targetPath = $_SERVER['DOCUMENT_ROOT'] . $relativePath;
 
     if (!is_dir($targetDir)) {
