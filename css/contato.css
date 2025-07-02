@@ -18,7 +18,7 @@ body {
 
 .main-form {
     margin: 0 auto;
-    width: 48rem;
+    max-width: 48rem;
     background-color: var(--color-white);
     height: 100%;
     box-shadow: var(--shadow-lg);
@@ -171,6 +171,15 @@ input[type="file"]::file-selector-button {
     background-color: var(--color-gray-50);
     white-space: pre-wrap;
     font-family: monospace;
+}
+
+.show-password {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 0.5rem;
+    cursor: pointer;
+    max-width: 1.325rem;
 }
 
 .flex {

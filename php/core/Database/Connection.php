@@ -12,27 +12,32 @@ class Connection
 
     private function __construct()
     {
-    }
+        $config = require __DIR__ . '/config.php';
 
-    public static function create(): void
-    {
-        require __DIR__ . '/../config.php';
-
-        if (!isset(self::$_instance)) {
-            self::$_instance = new self();
-        }
-
-        $instance = self::$_instance;
-        $host = $CONFIG["host"];
-        $username = $CONFIG["username"];
-        $password = $CONFIG["password"];
-        $database = $CONFIG["database"];
-        $port = $CONFIG["port"];
+        $host = $config["host"];
+        $username = $config["username"];
+        $password = $config["password"];
+        $schema = $config["database"];
+        $port = $config["port"];
 
         try {
-            $conn = new PDO("mysql:host=$host;dbname=$database;port=$port", $username, $password);
-            $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $instance->pdo = $conn;
+            $dsn = "mysql:host=$host;port=$port";
+            $pdo = new PDO($dsn, $username, $password);
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+            $stmt = $pdo->query("SHOW SCHEMAS LIKE " . $pdo->quote($schema));
+            $db_exists = $stmt->fetchColumn();
+
+            if (!$db_exists) {
+                $sqlFile = __DIR__ . "/script.sql";
+                if (file_exists($sqlFile)) {
+                    $sql = file_get_contents($sqlFile);
+                    $pdo->exec($sql);
+                }
+            }
+
+            $pdo->exec("USE `$schema`");
+            $this->pdo = $pdo;
         } catch (PDOException $e) {
             throw new \Exception("Connection failed: " . $e->getMessage());
         }
@@ -40,6 +45,10 @@ class Connection
 
     public static function pdo(): PDO
     {
+        if (!isset(self::$_instance)) {
+            self::$_instance = new self();
+        }
+
         return self::$_instance->pdo;
     }
 

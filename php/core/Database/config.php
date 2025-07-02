@@ -1,5 +1,5 @@
 <?php
-$CONFIG = [
+return [
     "host" => "localhost",
     "username" => "root",
     "password" => "root",
