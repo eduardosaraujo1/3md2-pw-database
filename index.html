@@ -130,17 +130,22 @@
                     foto: null,
                 };
 
-                $("input").on("keyup change", (e) => {
+                const refreshForm = (field_id = null) => {
                     let errors;
-                    form = syncForm(form, e.currentTarget.id);
+                    form = syncForm(form, field_id);
                     errors = validateForm(form);
 
                     if (Object.keys(errors).length > 0) {
                         showErrors(errors);
                         $("button#submit").attr("disabled", true);
                     } else {
+                        clearErrors();
                         $("button#submit").attr("disabled", false);
                     }
+                };
+
+                $("input").on("keyup change", (e) => {
+                    refreshForm(e.currentTarget.id ?? null);
                 });
 
                 $(".show-password").on("click", (e) => {
@@ -163,26 +168,36 @@
                 });
 
                 $("button#submit").on("click", () => {
+                    const formData = new FormData();
+                    for (const field in form) {
+                        formData.append(field, form[field]);
+                    }
+                    console.log(form);
+                    console.log(formData);
+
                     $.ajax({
                         url: meta.action,
-                        data: form,
+                        data: formData,
                         method: meta.method,
                         processData: false, // por padrão, o Jquery transforma o FormData em queryString, isso previne isso
                         contentType: false, // por padrão, o Jquery envia o tipo "texto", o que não suporta upload de arquivos
-                        dataType: "html",
+                        dataType: "json",
                     })
                         .done((content) => {
-                            $("#output").html(content);
+                            $("#output").html(JSON.stringify(content, null, 2));
                         })
-                        .fail(() => {
-                            $("#output").html(`Ocorreu uma falha nessa requisição`);
+                        .fail((jqXHR) => {
+                            const err = jqXHR.responseJSON;
+                            $("#output").html(JSON.stringify(err, null, 2));
                         });
                 });
+
+                refreshForm();
             });
         </script>
     </head>
     <body>
-        <div class="bg-red-900 page-container">
+        <div class="page-container">
             <div class="main-form">
                 <div class="error-container">
                     <h3 class="error-title">Erros de Validação</h3>
