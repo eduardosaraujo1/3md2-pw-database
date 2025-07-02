@@ -79,18 +79,17 @@ class Connection
     public static function fetch(string $query, array $params = [])
     {
         $pdo = self::pdo();
+        $stmt = $pdo->prepare($query);
 
-        $smt = $pdo->prepare($query);
-
-        if (!$smt) {
+        if (!$stmt) {
             throw new \Exception("Statement create error: prepare command failed");
 
         }
 
-        if (!$smt->execute($params)) {
+        if (!$stmt->execute($params)) {
             throw new \Exception("Statement create error: execute command failed");
         }
 
-        return $smt->fetchAll();
+        return $stmt->fetchAll();
     }
 }
