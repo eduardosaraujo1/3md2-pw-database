@@ -80,3 +80,9 @@ CREATE TABLE tb_contato (
 INSERT INTO tb_usuario (login, email, senha) VALUES
 ('didi', 'didi@gmail.com', '1234');
 ```
+
+# ROadmap
+
+Criar tela de login, onde passa o login e senha para validar no banco, depois armazenar na sessão o usuário e encaminhar para tela inicial. Se der erro, exibir mensagem de erro (via AJAX)
+Refazer tela de cadastro (estilização)
+Criar tela home com os dados do usuário listados

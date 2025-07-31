@@ -1,18 +1,18 @@
 <?php
 
-namespace Core\Database;
+namespace App\Services;
 
 use \PDO;
 use \PDOException;
 
-class Connection
+class DatabaseService
 {
     private static $_instance;
     public $pdo;
 
     private function __construct()
     {
-        $config = require __DIR__ . '/config.php';
+        $config = require __DIR__ . '/../../config/database.php';
 
         $host = $config["host"];
         $username = $config["username"];
@@ -29,7 +29,7 @@ class Connection
             $db_exists = $stmt->fetchColumn();
 
             if (!$db_exists) {
-                $sqlFile = __DIR__ . "/script.sql";
+                $sqlFile = __DIR__ . "../../script.sql";
                 if (file_exists($sqlFile)) {
                     $sql = file_get_contents($sqlFile);
                     $pdo->exec($sql);
@@ -59,7 +59,7 @@ class Connection
         return $pdo->query($query);
     }
 
-    public static function query(string $query, array $params = [])
+    public static function query(string $query, array $params = []): bool
     {
         $pdo = self::pdo();
 
@@ -73,7 +73,7 @@ class Connection
             throw new \Exception("Statement create error: execute command failed");
         }
 
-        return $stmt->rowCount();
+        return $stmt->rowCount() > 0;
     }
 
     public static function fetch(string $query, array $params = [])

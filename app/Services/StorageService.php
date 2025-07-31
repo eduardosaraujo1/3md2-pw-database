@@ -1,8 +1,8 @@
 <?php
 
-namespace Php\Core\Utils;
+namespace App\Services;
 
-class Storage
+class StorageService
 {
     public static function store(?array $file)
     {

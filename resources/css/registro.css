@@ -2,21 +2,22 @@
 
 * {
     box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 body {
-    margin: 0;
-    padding: 0;
+    background-color: var(--color-neutral-200);
     font-family: system-ui, -apple-system, sans-serif;
+    line-height: 1.5;
 }
 
 .page-container {
-    width: 100vw;
     height: 100vh;
     background-color: var(--color-neutral-200);
 }
 
-.main-form {
+.form {
     margin: 0 auto;
     max-width: 48rem;
     background-color: var(--color-white);
@@ -62,7 +63,7 @@ body {
     box-shadow: var(--shadow-sm);
 }
 
-.form-field {
+.form-group {
     margin-bottom: 0.25rem;
 }
 
