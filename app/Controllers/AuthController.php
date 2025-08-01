@@ -17,7 +17,11 @@ class AuthController
     }
     public function login()
     {
-        Response::view("login");
+        if ($this->authService->isSignedIn()) {
+            Response::redirect('/');
+        } else {
+            Response::view("login");
+        }
     }
 
     public function register()
@@ -88,5 +92,6 @@ class AuthController
     public function signOut()
     {
         $this->authService->signOut();
+        return Response::redirect('/');
     }
 }

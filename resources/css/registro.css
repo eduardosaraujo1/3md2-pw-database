@@ -84,29 +84,26 @@ input[type="file"]::file-selector-button {
     color: var(--color-red-600);
 }
 
-.submit-button {
-    margin-top: 1.5rem;
+button {
     color: var(--color-white);
     background-color: var(--color-blue-700);
     font-weight: 500;
     border-radius: 0.5rem;
     font-size: 0.875rem;
     padding: 0.625rem 1.25rem;
-    margin-right: 0.5rem;
-    margin-bottom: 0.5rem;
     border: none;
     cursor: pointer;
 }
 
-.submit-button:hover {
+button:hover {
     background-color: var(--color-blue-800);
 }
 
-.submit-button:focus {
+button:focus {
     outline: none;
 }
 
-.submit-button:disabled {
+button:disabled {
     color: var(--color-white);
     background-color: var(--color-blue-400);
     cursor: not-allowed;
@@ -122,16 +119,17 @@ input[type="file"]::file-selector-button {
     text-align: left;
 }
 
-.response-output {
-    min-width: 100%;
-    text-align: left;
-    border: 1px solid var(--color-neutral-500);
-    min-height: 24rem;
-    width: fit-content;
-    padding: 1rem;
-    background-color: var(--color-gray-50);
-    white-space: pre-wrap;
-    font-family: monospace;
+.form-footer {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    justify-content: end;
+    height: fit-content;
+    margin-top: 0.75rem;
+}
+
+.form-footer span {
+    color: var(--color-neutral-600);
 }
 
 .show-password {
@@ -143,24 +141,10 @@ input[type="file"]::file-selector-button {
     max-width: 1.325rem;
 }
 
-.flex {
-    display: flex;
-}
-
-.g-2 {
+.input-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 0.5rem;
-}
-
-.flex-1 {
-    flex: 1;
-}
-
-.w-full {
-    width: 100%;
-}
-
-.justify-end {
-    justify-content: end;
 }
 
 ::-webkit-scrollbar-track {

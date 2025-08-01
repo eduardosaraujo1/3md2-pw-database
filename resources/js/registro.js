@@ -105,6 +105,8 @@ function clearErrors() {
 }
 
 $(() => {
+    const inputs = $("input");
+    const btnSubmit = $("button#submit");
     let meta = {
         action: "/signup",
         method: "post",
@@ -127,14 +129,14 @@ $(() => {
 
         if (Object.keys(errors).length > 0) {
             showErrors(errors);
-            $("button#submit").attr("disabled", true);
+            btnSubmit.attr("disabled", true);
         } else {
             clearErrors();
-            $("button#submit").attr("disabled", false);
+            btnSubmit.attr("disabled", false);
         }
     };
 
-    $("input").on("keyup change", (e) => {
+    inputs.on("keyup change", (e) => {
         refreshForm(e.currentTarget.id ?? null);
     });
 
@@ -157,7 +159,7 @@ $(() => {
         element.data("visible", !visible);
     });
 
-    $("button#submit").on("click", () => {
+    btnSubmit.on("click", () => {
         const formData = new FormData();
         for (const field in form) {
             formData.append(field, form[field]);
@@ -173,12 +175,13 @@ $(() => {
         })
             .done((content) => {
                 // $("#output").html(JSON.stringify(content, null, 2));
+                $("#output").html("Usuário cadastrado com sucesso");
                 console.log(content);
             })
             .fail((jqXHR) => {
                 const err = jqXHR.responseJSON;
-                // $("#output").html(JSON.stringify(err, null, 2));
-                console.log(err);
+                $("#output").html(err["error"] ?? "Ocorreu um erro desconhecido");
+                console.alert(err);
             });
     });
 

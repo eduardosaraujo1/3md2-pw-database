@@ -59,7 +59,7 @@ $router = [
         }
     },
     '/signout' => function () use ($authController) {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             $authController->signout();
         }
     },

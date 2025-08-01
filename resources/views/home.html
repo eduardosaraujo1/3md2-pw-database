@@ -3,13 +3,42 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Login</title>
+        <title>Home</title>
         <!-- Styles -->
-        <link rel="stylesheet" href="/resources/css/" />
+        <link rel="stylesheet" href="/resources/css/home.css" />
         <!-- Scripts -->
         <script src="/resources/js/lib/jquery.js"></script>
+        <script src="/resources/js/home.js"></script>
     </head>
     <body>
-        <h1>Work in progress</h1>
+        <div class="container">
+            <div class="profile-box">
+                <h2>Perfil do Usuário</h2>
+                <div class="form-group">
+                    <label for="nome">Nome</label>
+                    <input type="text" id="nome" name="nome" disabled />
+                </div>
+                <div class="form-group">
+                    <label for="login">Login</label>
+                    <input type="text" id="login" name="login" disabled />
+                </div>
+                <div class="form-group">
+                    <label for="senha">Senha</label>
+                    <input type="password" id="senha" name="senha" disabled />
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" disabled />
+                </div>
+                <div class="form-group">
+                    <label for="telefone">Telefone</label>
+                    <input type="tel" id="telefone" name="telefone" disabled />
+                </div>
+                <div class="form-footer">
+                    <span id="errorMessage" class="error-message"></span>
+                    <button id="editButton">Editar</button>
+                </div>
+            </div>
+        </div>
     </body>
 </html>

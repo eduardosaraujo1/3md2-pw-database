@@ -60,6 +60,11 @@ class AuthService
         return $user;
     }
 
+    public function isSignedIn()
+    {
+        return $this->session->has('user_id');
+    }
+
     public function signOut()
     {
         $this->session->remove('user_id');

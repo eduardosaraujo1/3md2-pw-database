@@ -20,16 +20,16 @@ body {
     padding: 1rem;
 }
 
-.login-box {
+.profile-box {
     background-color: #ffffff;
     padding: 2rem;
     border-radius: 0.5rem;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     width: 100%;
-    max-width: 400px;
+    max-width: 500px;
 }
 
-.login-box h2 {
+.profile-box h2 {
     margin-bottom: 1.5rem;
     font-size: 1.5rem;
     font-weight: 600;
@@ -81,8 +81,6 @@ button {
     border-radius: 0.5rem;
     font-size: 0.875rem;
     padding: 0.625rem 1.25rem;
-    margin-right: 0.5rem;
-    margin-bottom: 0.5rem;
     border: none;
     cursor: pointer;
 }
@@ -99,9 +97,4 @@ button:disabled {
     color: var(--color-white);
     background-color: var(--color-blue-400);
     cursor: not-allowed;
-    font-weight: 500;
-    border-radius: 0.5rem;
-    font-size: 0.875rem;
-    padding: 0.625rem 1.25rem;
-    text-align: center;
 }

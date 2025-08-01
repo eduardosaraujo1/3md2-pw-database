@@ -106,7 +106,7 @@ class UserRepository
 
         $user = User::fromArray($data[0]);
 
-        if (password_verify($password, $user->senha)) {
+        if (!password_verify($password, $user->senha)) {
             return null;
         }
 
