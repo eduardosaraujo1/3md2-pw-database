@@ -10,11 +10,7 @@ body {
     background-color: var(--color-neutral-200);
     font-family: system-ui, -apple-system, sans-serif;
     line-height: 1.5;
-}
-
-.page-container {
     height: 100vh;
-    background-color: var(--color-neutral-200);
 }
 
 .form {
@@ -23,51 +19,15 @@ body {
     background-color: var(--color-white);
     height: 100%;
     box-shadow: var(--shadow-lg);
-    padding: 0.5rem;
+    padding: 1rem 2rem;
     overflow: auto;
-}
-
-.error-container {
-    padding: 0 0.5rem 0.75rem 0.5rem;
-    overflow-y: auto;
-    text-align: left;
-    background-color: var(--color-red-300);
-    max-height: 12rem;
-    display: none;
-}
-
-.error-container.show {
-    display: block;
-}
-
-.error-title {
-    position: sticky;
-    top: 0;
-    padding-top: 0.5rem;
-    font-weight: bold;
-    color: var(--color-red-800);
-    background-color: var(--color-red-300);
-}
-
-.error-list {
-    list-style-type: disc;
-    margin-left: 1rem;
-}
-
-.error-list li {
-    color: var(--color-red-800);
-}
-
-.form-content {
-    padding: 0.5rem;
-    box-shadow: var(--shadow-sm);
 }
 
 .form-group {
     margin-bottom: 0.25rem;
 }
 
-.field-label {
+.form-label {
     display: block;
     margin-bottom: 0.5rem;
     font-size: 0.875rem;
@@ -75,7 +35,7 @@ body {
     color: var(--color-gray-900);
 }
 
-.text-input {
+.form-input {
     background-color: var(--color-gray-50);
     border: 1px solid var(--color-gray-300);
     color: var(--color-gray-900);
@@ -86,7 +46,7 @@ body {
     padding: 0.625rem;
 }
 
-.text-input:focus {
+.form-input:focus {
     outline: none;
     border-color: var(--color-blue-500);
 }
@@ -117,7 +77,7 @@ input[type="file"]::file-selector-button {
     outline: none;
 }
 
-.field-error {
+.form-error {
     display: none;
     margin-top: 0;
     font-size: 0.875rem;
@@ -157,7 +117,7 @@ input[type="file"]::file-selector-button {
     text-align: center;
 }
 
-.response-title {
+.form-title {
     margin: 0.5rem 0;
     text-align: left;
 }

@@ -96,12 +96,12 @@ function showErrors(errors) {
     clearErrors();
 
     for (const field in errors) {
-        $(`[data-field=${field}]`).show().html(errors[field]);
+        $(`[data-for=${field}]`).show().html(errors[field]);
     }
 }
 
 function clearErrors() {
-    $(".field-error").hide();
+    $(".form-error").hide();
 }
 
 $(() => {
