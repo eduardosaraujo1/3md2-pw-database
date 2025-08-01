@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\DTO\UserRegisterDTO;
 use App\Models\User;
+use App\Providers\Provider;
 use App\Repositories\UserRepository;
 
 class AuthService
@@ -12,7 +13,7 @@ class AuthService
 
     public function __construct()
     {
-        $this->userRepository = UserRepository::instance();
+        $this->userRepository = Provider::get(UserRepository::class);
     }
 
     public function registerUser(UserRegisterDTO $data): User|null

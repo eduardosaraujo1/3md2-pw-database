@@ -4,12 +4,13 @@ namespace App\Controllers;
 
 use App\DTO\UserRegisterDTO;
 use App\Helpers\Response;
+use App\Providers\Provider;
 use App\Services\AuthService;
 
 class AuthController
 {
     public function __construct(
-        public AuthService $authService = new AuthService()
+        public AuthService $authService = Provider::get(AuthService::class)
     ) {
     }
     public function login()

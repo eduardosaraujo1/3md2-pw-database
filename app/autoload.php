@@ -7,3 +7,5 @@ require __DIR__ . '/Services/AuthService.php';
 require __DIR__ . '/Services/DatabaseService.php';
 require __DIR__ . '/Services/StorageService.php';
 require __DIR__ . '/DTO/UserRegisterDTO.php';
+require __DIR__ . '/Providers/Provider.php';
+require __DIR__ . '/Providers/Container.php';

@@ -2,25 +2,15 @@
 
 namespace App\Repositories;
 
-use App\Helpers\Response;
 use App\Models\User;
 use App\Services\DatabaseService;
 
-class UserRepository
+class UserRepository implements Repository
 {
-    private static ?self $_instance = null;
     public string $table = 'tb_contato';
 
-    private function __construct()
+    public function __construct()
     {
-    }
-
-    public static function instance(): UserRepository
-    {
-        if (!self::$_instance) {
-            self::$_instance = new self();
-        }
-        return self::$_instance;
     }
 
     /**
