@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\DTO\SignInCredentialsDTO;
 use App\DTO\UserRegisterDTO;
 use App\Helpers\Response;
 use App\Providers\Provider;
@@ -9,9 +10,10 @@ use App\Services\AuthService;
 
 class AuthController
 {
-    public function __construct(
-        public AuthService $authService = Provider::get(AuthService::class)
-    ) {
+    public AuthService $authService;
+    public function __construct()
+    {
+        $this->authService = Provider::get(AuthService::class);
     }
     public function login()
     {
@@ -26,6 +28,7 @@ class AuthController
     public function signup($dados)
     {
         try {
+            // Form validation
             $requiredFields = ['nome', 'login', 'email', 'senha', 'telefone'];
 
             foreach ($requiredFields as $field) {
@@ -34,6 +37,7 @@ class AuthController
                 }
             }
 
+            // Logic
             $userDTO = new UserRegisterDTO(
                 nome: $dados['nome'],
                 login: $dados['login'],
@@ -45,9 +49,44 @@ class AuthController
 
             $user = $this->authService->registerUser($userDTO) ?? [];
 
-            Response::json($user);
+            Response::json(['status' => 'success', 'user' => $user]);
         } catch (\Exception $e) {
             Response::error($e->getMessage());
         }
+    }
+
+    public function signIn(array $dados)
+    {
+        try {
+            // Form validation
+            $required = ['login', 'senha'];
+
+            foreach ($required as $field) {
+                if (empty($dados[$field])) {
+                    throw new \Exception("O campo '{$field}' é obrigatório.");
+                }
+            }
+
+            // Logic
+            $signInDTO = new SignInCredentialsDTO(
+                login: $dados['login'],
+                senha: $dados['senha']
+            );
+
+            $user = $this->authService->signInWithCredentials($signInDTO);
+
+            if (!$user) {
+                throw new \Exception("Usuário ou senha incorretos");
+            }
+
+            return Response::json(['status' => 'success', 'user' => $user]);
+        } catch (\Exception $e) {
+            Response::error($e->getMessage());
+        }
+    }
+
+    public function signOut()
+    {
+        $this->authService->signOut();
     }
 }

@@ -5,7 +5,7 @@ namespace App\Repositories;
 use App\Models\User;
 use App\Services\DatabaseService;
 
-class UserRepository implements Repository
+class UserRepository
 {
     public string $table = 'tb_contato';
 
@@ -14,6 +14,7 @@ class UserRepository implements Repository
     }
 
     /**
+     * Aviso: aplica hash bcrypt12 nas senhas
      *  @param array{nome:string,login:string,senha:string,email:string,telefone:string,foto:string} $data
      *  @return bool
      */
@@ -21,12 +22,12 @@ class UserRepository implements Repository
     {
         return DatabaseService::query(
             query: "
-                INSERT INTO tb_contato (nome, login, senha, email, telefone, foto) VALUES
+                INSERT INTO $this->table (nome, login, senha, email, telefone, foto) VALUES
                 (:nome, :login, :senha, :email, :telefone, :foto)",
             params: [
                 "nome" => $data['nome'],
                 "login" => $data['login'],
-                "senha" => $data['senha'],
+                "senha" => password_hash($data['senha'], PASSWORD_BCRYPT),
                 "email" => $data['email'],
                 "telefone" => $data['telefone'],
                 "foto" => $data['foto']
@@ -36,7 +37,7 @@ class UserRepository implements Repository
 
     public function getLatest(): User|null
     {
-        $users = DatabaseService::fetch("SELECT * FROM tb_contato ORDER BY id DESC LIMIT 1");
+        $users = DatabaseService::fetch("SELECT * FROM $this->table ORDER BY id DESC LIMIT 1");
         $user = $users[0] ?? null;
 
         if (!$user)
@@ -75,4 +76,40 @@ class UserRepository implements Repository
         return $result;
     }
 
+    public function findById(string $id): ?User
+    {
+        $data = DatabaseService::fetch(
+            query: "SELECT * FROM {$this->table} WHERE id = :id",
+            params: ['id' => $id]
+        );
+
+        if (empty($data)) {
+            return null;
+        }
+
+        return User::fromArray($data[0]);
+    }
+
+    public function findByLoginAndPassword(string $login, string $password): ?User
+    {
+        $data = DatabaseService::fetch(
+            query: "SELECT * FROM {$this->table} WHERE login = :login OR email = :email",
+            params: [
+                "login" => $login,
+                "email" => $login
+            ]
+        );
+
+        if (empty($data)) {
+            return null;
+        }
+
+        $user = User::fromArray($data[0]);
+
+        if (password_verify($password, $user->senha)) {
+            return null;
+        }
+
+        return $user;
+    }
 }

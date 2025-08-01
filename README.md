@@ -84,5 +84,4 @@ INSERT INTO tb_usuario (login, email, senha) VALUES
 # ROadmap
 
 Criar tela de login, onde passa o login e senha para validar no banco, depois armazenar na sessão o usuário e encaminhar para tela inicial. Se der erro, exibir mensagem de erro (via AJAX)
-Refazer tela de cadastro (estilização)
 Criar tela home com os dados do usuário listados
