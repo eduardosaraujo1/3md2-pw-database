@@ -35,6 +35,36 @@ class UserRepository
         );
     }
 
+    /**
+     * Atualiza os dados do usuário.
+     * Aviso: aplica hash bcrypt12 na senha.
+     * @param int $id Identificador do usuário a ser atualizado.
+     * @param array{nome:string,login:string,senha:string,email:string,telefone:string,foto:string} $data
+     * @return bool
+     */
+    public function update(int $id, array $data): bool
+    {
+        return DatabaseService::query(
+            query: "
+            UPDATE {$this->table} SET
+                nome = :nome,
+                login = :login,
+                senha = :senha,
+                email = :email,
+                telefone = :telefone
+            WHERE id = :id
+        ",
+            params: [
+                "id" => $id,
+                "nome" => $data['nome'],
+                "login" => $data['login'],
+                "senha" => password_hash($data['senha'], PASSWORD_BCRYPT),
+                "email" => $data['email'],
+                "telefone" => $data['telefone'],
+            ]
+        );
+    }
+
     public function getLatest(): User|null
     {
         $users = DatabaseService::fetch("SELECT * FROM $this->table ORDER BY id DESC LIMIT 1");

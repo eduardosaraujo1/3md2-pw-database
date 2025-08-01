@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\DTO\UserRegisterDTO;
 use App\Models\User;
 use App\Providers\Provider;
 use App\Repositories\UserRepository;
@@ -28,4 +29,28 @@ class UserService
 
         return $user; // if user is null, response is also null
     }
+
+    public function updateUser(int $id, UserRegisterDTO $data): User
+    {
+        $existingUser = $this->userRepository->findById($id);
+
+        if (!$existingUser) {
+            throw new \Exception("Usuário não encontrado.");
+        }
+
+        $success = $this->userRepository->update($id, $data->toArray());
+
+        if (!$success) {
+            throw new \Exception("Falha ao atualizar o usuário.");
+        }
+
+        $updated = $this->userRepository->findById($id);
+
+        if (!$updated) {
+            throw new \Exception("Erro ao recuperar o usuário atualizado.");
+        }
+
+        return $updated;
+    }
+
 }

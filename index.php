@@ -48,6 +48,11 @@ $router = [
             $userController->getProfile();
         }
     },
+    '/profile/update' => function () use ($userController) {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $userController->updateProfile($_POST);
+        }
+    },
     '/signup' => function () use ($authController) {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $authController->signup($_POST);

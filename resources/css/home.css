@@ -98,3 +98,7 @@ button:disabled {
     background-color: var(--color-blue-400);
     cursor: not-allowed;
 }
+
+button.signout-button {
+    background-color: var(--color-red-500);
+}
