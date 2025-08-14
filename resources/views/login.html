@@ -5,30 +5,42 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Login</title>
         <!-- Styles -->
-        <link rel="stylesheet" href="/resources/css/login.css" />
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr"
+            crossorigin="anonymous"
+        />
         <!-- Scripts -->
         <script src="/resources/js/lib/jquery.js"></script>
         <script src="/resources/js/login.js"></script>
     </head>
-    <body>
-        <div class="container">
-            <div class="login-box">
-                <h2>Login</h2>
-                <div class="form">
-                    <div class="form-group">
-                        <label for="login">Username</label>
-                        <input type="text" id="login" name="login" required />
-                    </div>
-                    <div class="form-group">
-                        <label for="senha">Password</label>
-                        <input type="password" id="senha" name="senha" required />
-                    </div>
-                    <div class="form-footer">
-                        <span id="errorMessage" class="error-message"></span>
-                        <button type="submit" id="submitButton" disabled>Login</button>
+    <body class="min-vh-100 d-flex align-items-center justify-content-center bg-body-secondary">
+        <div class="container min-vh-100 d-flex align-items-center justify-content-center">
+            <div class="row w-100 justify-content-center align-items-center">
+                <div class="col-md-8 col-lg-6">
+                    <div id="loginForm" class="card p-4 shadow">
+                        <h2 class="mb-4 text-center">Login</h2>
+                        <div class="mb-3">
+                            <label for="login" class="form-label">Usuário</label>
+                            <input type="text" id="login" name="login" class="form-control" required />
+                        </div>
+                        <div class="mb-3">
+                            <label for="senha" class="form-label">Senha</label>
+                            <input type="password" id="senha" name="senha" class="form-control" required />
+                        </div>
+                        <div class="d-flex align-items-center gap-2 mt-3">
+                            <span id="errorMessage" class="text-danger flex-grow-1"></span>
+                            <button type="submit" id="submitButton" class="btn btn-primary" disabled>Login</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+        <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
+            crossorigin="anonymous"
+        ></script>
     </body>
 </html>

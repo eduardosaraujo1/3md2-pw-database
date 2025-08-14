@@ -18,3 +18,5 @@ CREATE TABLE IF NOT EXISTS tb_contato(
     telefone VARCHAR(255) NOT NULL,
     foto VARCHAR(255)
 );
+select * from tb_contato;
+INSERT INTO tb_contato VALUES (NULL, "Admin", "admin", "$2a$12$IYe6qvlevtzmCxu4zjkIIuLmrPMIvBwmhl3YApHE7fuxI9cadkesW", 'admin@gmail.com', '11951490211', NULL); -- Senha admin

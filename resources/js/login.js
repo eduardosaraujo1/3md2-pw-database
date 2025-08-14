@@ -80,7 +80,7 @@ $(() => {
             /** @param {JQuery.jqXHR} xhr */
             onError: function (xhr) {
                 const res = xhr.responseJSON;
-                errorMessage.text(res["error"] ?? "Erro interno no servidor").addClass("show");
+                errorMessage.text(res?.["error"] ?? "Erro interno no servidor").addClass("show");
             },
         });
     });
