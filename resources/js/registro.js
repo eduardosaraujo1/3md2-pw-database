@@ -106,7 +106,7 @@ function clearErrors() {
 
 $(() => {
     const inputs = $("input");
-    const btnSubmit = $("button#submit");
+    const btnSubmit = $("button#register-submit");
     let meta = {
         action: "/signup",
         method: "post",
@@ -180,7 +180,7 @@ $(() => {
             .fail((jqXHR) => {
                 const err = jqXHR.responseJSON;
                 $("#output").html(err["error"] ?? "Ocorreu um erro desconhecido");
-                console.alert(err);
+                console.warn(err);
             });
     });
 

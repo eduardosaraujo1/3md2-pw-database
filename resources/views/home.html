@@ -19,6 +19,7 @@
         <script src="/resources/js/lib/jquery.js"></script>
         <script src="/resources/js/shared.js"></script>
         <script src="/resources/js/home.js"></script>
+        <script src="/resources/js/registro.js"></script>
     </head>
     <body class="bg-body-secondary">
         <div class="container vh-100">
@@ -80,11 +81,121 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <p>Work in Progress...</p>
+                        <div class="js-form">
+                            <div class="mb-3">
+                                <label for="nome" class="form-label">Nome</label>
+                                <input
+                                    type="text"
+                                    id="nome"
+                                    name="nome"
+                                    class="form-control"
+                                    placeholder="Nome"
+                                    required
+                                />
+                                <p class="js-form-error text-danger small" data-for="nome"></p>
+                            </div>
+                            <div class="mb-3">
+                                <label for="login" class="form-label">Login</label>
+                                <input
+                                    type="text"
+                                    id="login"
+                                    name="login"
+                                    class="form-control"
+                                    placeholder="Login"
+                                    required
+                                />
+                                <p class="js-form-error text-danger small" data-for="login"></p>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="senha" class="form-label">Senha</label>
+                                    <div class="position-relative">
+                                        <input
+                                            type="password"
+                                            id="senha"
+                                            name="senha"
+                                            class="form-control"
+                                            placeholder="Senha"
+                                            required
+                                        />
+                                        <img
+                                            data-visible="false"
+                                            data-target="senha"
+                                            src="/resources/assets/icons/eye-slash-solid.svg"
+                                            alt="eye-solid"
+                                            style="
+                                                position: absolute;
+                                                top: 50%;
+                                                right: 0.75rem;
+                                                transform: translateY(-50%);
+                                                cursor: pointer;
+                                                max-width: 1.325rem;
+                                            "
+                                        />
+                                    </div>
+                                    <p class="js-form-error text-danger small" data-for="senha"></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="confirmSenha" class="form-label">Confirmar Senha</label>
+                                    <div class="position-relative">
+                                        <input
+                                            type="password"
+                                            id="confirmSenha"
+                                            class="form-control"
+                                            placeholder="Confirmar Senha"
+                                            required
+                                        />
+                                        <img
+                                            data-visible="false"
+                                            data-target="confirmSenha"
+                                            src="/resources/assets/icons/eye-slash-solid.svg"
+                                            alt="eye-solid"
+                                            style="
+                                                position: absolute;
+                                                top: 50%;
+                                                right: 0.75rem;
+                                                transform: translateY(-50%);
+                                                cursor: pointer;
+                                                max-width: 1.325rem;
+                                            "
+                                        />
+                                    </div>
+                                    <p class="js-form-error text-danger small" data-for="confirmSenha"></p>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">E-mail</label>
+                                <input
+                                    type="email"
+                                    id="email"
+                                    name="email"
+                                    class="form-control"
+                                    placeholder="E-mail"
+                                    required
+                                />
+                                <p class="js-form-error text-danger small" data-for="email"></p>
+                            </div>
+                            <div class="mb-3">
+                                <label for="telefone" class="form-label">Telefone</label>
+                                <input
+                                    type="text"
+                                    id="telefone"
+                                    name="telefone"
+                                    class="form-control"
+                                    placeholder="Telefone"
+                                    required
+                                />
+                                <p class="js-form-error text-danger small" data-for="telefone"></p>
+                            </div>
+                            <div class="mb-3">
+                                <label for="user_avatar" class="form-label">Upload file</label>
+                                <input type="file" id="foto" name="foto" class="form-control" />
+                            </div>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="button" class="btn btn-primary">Salvar</button>
+                        <button type="button" id="register-submit" class="btn btn-primary">Salvar</button>
                     </div>
                 </div>
             </div>
