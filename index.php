@@ -43,6 +43,16 @@ $router = [
             $authController->register();
         }
     },
+    '/users' => function () use ($userController) {
+        if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+            $userController->index();
+        }
+    },
+    '/user/store' => function () use ($userController) {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $userController->store($_POST);
+        }
+    },
     '/profile' => function () use ($userController) {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $userController->getProfile();

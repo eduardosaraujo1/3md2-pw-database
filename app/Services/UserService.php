@@ -53,4 +53,8 @@ class UserService
         return $updated;
     }
 
+    public function getAllUsers(): array
+    {
+        return $this->userRepository->all();
+    }
 }
