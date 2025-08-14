@@ -101,7 +101,7 @@ function showErrors(errors) {
 }
 
 function clearErrors() {
-    $(".form-error").hide();
+    $(".js-form-error").hide();
 }
 
 $(() => {
@@ -123,9 +123,8 @@ $(() => {
     };
 
     const refreshForm = (field_id = null) => {
-        let errors;
         form = syncForm(form, field_id);
-        errors = validateForm(form);
+        const errors = validateForm(form);
 
         if (Object.keys(errors).length > 0) {
             showErrors(errors);
