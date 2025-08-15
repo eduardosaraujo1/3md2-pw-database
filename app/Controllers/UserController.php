@@ -12,13 +12,11 @@ use Exception;
 
 class UserController
 {
-    public UserService $userService;
-    public AuthService $authService;
 
-    public function __construct()
-    {
-        $this->userService = Provider::get(UserService::class);
-        $this->authService = Provider::get(AuthService::class);
+    public function __construct(
+        public UserService $userService,
+        public AuthService $authService
+    ) {
     }
     public function home()
     {

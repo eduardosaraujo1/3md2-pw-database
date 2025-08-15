@@ -9,7 +9,7 @@ require __DIR__ . '/Services/AuthService.php';
 require __DIR__ . '/Services/UserService.php';
 require __DIR__ . '/Services/DatabaseService.php';
 require __DIR__ . '/Services/SessionService.php';
-require __DIR__ . '/Services/StorageService.php';
+require __DIR__ . '/Services/ImageStorageService.php';
 require __DIR__ . '/DTO/UserRegisterDTO.php';
 require __DIR__ . '/DTO/SignInCredentialsDTO.php';
 require __DIR__ . '/Providers/Provider.php';

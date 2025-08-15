@@ -10,10 +10,10 @@ use App\Services\AuthService;
 
 class AuthController
 {
-    public AuthService $authService;
-    public function __construct()
-    {
-        $this->authService = Provider::get(AuthService::class);
+    public function __construct(
+        public AuthService $authService
+
+    ) {
     }
     public function login()
     {

@@ -74,4 +74,7 @@ INSERT INTO tb_usuario (login, email, senha) VALUES
 ('didi', 'didi@gmail.com', '1234');
 ```
 
-# ROadmap
+# Roadmap
+
+-   [ ] Criar classes app/Services/Connections/MySQLConnection e app/Services/Connections/SQLiteConnection para melhorar execução em ambientes não MySQL (dependency injection em DatabaseService)
+-   [ ] Endpoints para editar e excluir usuários

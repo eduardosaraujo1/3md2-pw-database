@@ -6,18 +6,54 @@ use App\Controllers\UserController;
 use App\Providers\Provider;
 use App\Repositories\UserRepository;
 use App\Services\AuthService;
+use App\Services\DatabaseService;
 use App\Services\SessionService;
-use App\Services\StorageService;
+use App\Services\ImageStorageService;
 use App\Services\UserService;
 
-// Setup Service Provider
-Provider::registerFactory(AuthController::class, fn() => new AuthController());
-Provider::registerFactory(UserController::class, fn() => new UserController());
-Provider::registerSingleton(SessionService::class, new SessionService());
-Provider::registerSingleton(UserRepository::class, new UserRepository());
-Provider::registerSingleton(AuthService::class, new AuthService());
-Provider::registerSingleton(UserService::class, new UserService());
-Provider::registerSingleton(StorageService::class, new StorageService());
+// Service Container
+function createServiceContainer(): void
+{
+    $oneHundredMB = 100 * 1024; // in kilobytes
+    $allowedTypes = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+    $imageStorageService = new ImageStorageService(
+        allowedTypes: $allowedTypes,
+        maxFileSize: $oneHundredMB, // 100 MB max file size
+    );
+
+    $sessionService = new SessionService();
+    $databaseService = new DatabaseService();
+
+    $userRepository = new UserRepository($databaseService);
+    $authService = new AuthService(
+        userRepository: $userRepository,
+        sessionService: $sessionService,
+        ImageStorageService: $imageStorageService
+    );
+    $userService = new UserService(
+        userRepository: $userRepository,
+        sessionService: $sessionService
+    );
+    $authController = new AuthController(
+        authService: $authService
+    );
+    $userController = new UserController(
+        userService: $userService,
+        authService: $authService
+    );
+
+    Provider::registerSingleton(SessionService::class, $sessionService);
+    Provider::registerSingleton(ImageStorageService::class, $imageStorageService);
+    Provider::registerSingleton(DatabaseService::class, $databaseService);
+    Provider::registerSingleton(UserRepository::class, $userRepository);
+    Provider::registerSingleton(AuthService::class, $authService);
+    Provider::registerSingleton(UserService::class, $userService);
+    Provider::registerSingleton(AuthController::class, $authController);
+    Provider::registerSingleton(UserController::class, $userController);
+}
+
+createServiceContainer();
+// End Service Container
 
 // Router
 /** @var AuthController */
@@ -78,5 +114,6 @@ if (!array_key_exists($uri, $router)) {
 }
 
 $callback = $router[$uri];
-
 $response = $callback();
+
+// End Router

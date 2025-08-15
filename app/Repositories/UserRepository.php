@@ -9,8 +9,9 @@ class UserRepository
 {
     public string $table = 'tb_contato';
 
-    public function __construct()
-    {
+    public function __construct(
+        public DatabaseService $databaseService
+    ) {
     }
 
     /**
@@ -20,7 +21,7 @@ class UserRepository
      */
     public function insert(array $data): bool
     {
-        return DatabaseService::query(
+        return $this->databaseService->query(
             query: "
                 INSERT INTO $this->table (nome, login, senha, email, telefone, foto) VALUES
                 (:nome, :login, :senha, :email, :telefone, :foto)",
@@ -44,7 +45,7 @@ class UserRepository
      */
     public function update(int $id, array $data): bool
     {
-        return DatabaseService::query(
+        return $this->databaseService->query(
             query: "
             UPDATE {$this->table} SET
                 nome = :nome,
@@ -67,7 +68,7 @@ class UserRepository
 
     public function getLatest(): User|null
     {
-        $users = DatabaseService::fetch("SELECT * FROM $this->table ORDER BY id DESC LIMIT 1");
+        $users = $this->databaseService->fetch("SELECT * FROM $this->table ORDER BY id DESC LIMIT 1");
         $user = $users[0] ?? null;
 
         if (!$user)
@@ -81,7 +82,7 @@ class UserRepository
      */
     public function checkDuplicates(string $login, string $email): array
     {
-        $data = DatabaseService::fetch(
+        $data = $this->databaseService->fetch(
             query: "SELECT login, email FROM $this->table WHERE login = :login OR email = :email",
             params: [
                 "login" => $login,
@@ -108,7 +109,7 @@ class UserRepository
 
     public function findById(string $id): ?User
     {
-        $data = DatabaseService::fetch(
+        $data = $this->databaseService->fetch(
             query: "SELECT * FROM {$this->table} WHERE id = :id",
             params: ['id' => $id]
         );
@@ -122,7 +123,7 @@ class UserRepository
 
     public function findByLoginAndPassword(string $login, string $password): ?User
     {
-        $data = DatabaseService::fetch(
+        $data = $this->databaseService->fetch(
             query: "SELECT * FROM {$this->table} WHERE login = :login OR email = :email",
             params: [
                 "login" => $login,
@@ -145,7 +146,7 @@ class UserRepository
 
     public function all(): array
     {
-        $data = DatabaseService::fetch("SELECT * FROM {$this->table}");
+        $data = $this->databaseService->fetch("SELECT * FROM {$this->table}");
 
         return array_map(fn($user) => User::fromArray($user), $data);
     }

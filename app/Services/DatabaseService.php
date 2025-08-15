@@ -7,10 +7,17 @@ use \PDOException;
 
 class DatabaseService
 {
-    private static $_instance;
     public $pdo;
 
-    private function __construct()
+    public function __construct()
+    {
+        $this->pdo = self::getPDO();
+    }
+
+    /**
+     * Initializes and returns a PDO instance, creates schema if needed.
+     */
+    public static function getPDO(): PDO
     {
         $config = require __DIR__ . '/../../config/database.php';
 
@@ -29,7 +36,7 @@ class DatabaseService
             $db_exists = $stmt->fetchColumn();
 
             if (!$db_exists) {
-                $sqlFile = __DIR__ . "../../script.sql";
+                $sqlFile = __DIR__ . '/../../script.sql';
                 if (file_exists($sqlFile)) {
                     $sql = file_get_contents($sqlFile);
                     $pdo->exec($sql);
@@ -37,33 +44,20 @@ class DatabaseService
             }
 
             $pdo->exec("USE `$schema`");
-            $this->pdo = $pdo;
+            return $pdo;
         } catch (PDOException $e) {
             throw new \Exception("Connection failed: " . $e->getMessage());
         }
     }
 
-    public static function pdo(): PDO
+    public function unsafe_query(string $query): bool|\PDOStatement
     {
-        if (!isset(self::$_instance)) {
-            self::$_instance = new self();
-        }
-
-        return self::$_instance->pdo;
+        return $this->pdo->query($query);
     }
 
-    public static function unsafe_query(string $query): bool|\PDOStatement
+    public function query(string $query, array $params = []): bool
     {
-        $pdo = self::pdo();
-
-        return $pdo->query($query);
-    }
-
-    public static function query(string $query, array $params = []): bool
-    {
-        $pdo = self::pdo();
-
-        $stmt = $pdo->prepare($query);
+        $stmt = $this->pdo->prepare($query);
 
         if (!$stmt) {
             throw new \Exception("Statement create error: prepare command failed");
@@ -76,14 +70,12 @@ class DatabaseService
         return $stmt->rowCount() > 0;
     }
 
-    public static function fetch(string $query, array $params = [])
+    public function fetch(string $query, array $params = [])
     {
-        $pdo = self::pdo();
-        $stmt = $pdo->prepare($query);
+        $stmt = $this->pdo->prepare($query);
 
         if (!$stmt) {
             throw new \Exception("Statement create error: prepare command failed");
-
         }
 
         if (!$stmt->execute($params)) {

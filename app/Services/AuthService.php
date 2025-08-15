@@ -13,12 +13,11 @@ use Exception;
 
 class AuthService
 {
-    public UserRepository $userRepository;
-    public SessionService $session;
     public function __construct(
+        public UserRepository $userRepository,
+        public SessionService $sessionService,
+        public ImageStorageService $ImageStorageService
     ) {
-        $this->userRepository = Provider::get(UserRepository::class);
-        $this->session = Provider::get(SessionService::class);
     }
 
     public function registerUser(UserRegisterDTO $data): User|null
@@ -39,7 +38,7 @@ class AuthService
         // Store photo
         $dataArray = $data->toArray();
         if ($data->foto) {
-            $dataArray['foto'] = StorageService::store($data->foto);
+            $dataArray['foto'] = $this->ImageStorageService->store($data->foto);
         }
 
         // Insert registry
@@ -54,7 +53,7 @@ class AuthService
         $user = $this->userRepository->findByLoginAndPassword($credentials->login, $credentials->senha);
 
         if ($user) {
-            $this->session->put("user_id", $user->id);
+            $this->sessionService->put("user_id", $user->id);
         }
 
         return $user;
@@ -62,11 +61,11 @@ class AuthService
 
     public function isSignedIn()
     {
-        return $this->session->has('user_id');
+        return $this->sessionService->has('user_id');
     }
 
     public function signOut()
     {
-        $this->session->remove('user_id');
+        $this->sessionService->remove('user_id');
     }
 }
