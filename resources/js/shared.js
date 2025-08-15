@@ -1,3 +1,4 @@
+/// <reference path="./lib/jquery.js" />
 function sendFormData({ endpoint, method = "POST", formData, onSuccess, onError }) {
     $.ajax({
         url: endpoint,

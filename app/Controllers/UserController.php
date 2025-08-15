@@ -29,6 +29,47 @@ class UserController
         }
     }
 
+    public function index()
+    {
+        try {
+            $users = $this->userService->getAllUsers();
+            Response::json($users);
+        } catch (Exception $e) {
+            Response::error($e->getMessage());
+        }
+    }
+
+    public function store(array $dados)
+    {
+        try {
+            // Form validation
+            $requiredFields = ['nome', 'login', 'email', 'senha', 'telefone'];
+
+            foreach ($requiredFields as $field) {
+                if (empty($dados[$field])) {
+                    throw new Exception("O campo '{$field}' é obrigatório.");
+                }
+            }
+
+            // Logic
+            $userDTO = new UserRegisterDTO(
+                nome: $dados['nome'],
+                login: $dados['login'],
+                email: $dados['email'],
+                senha: $dados['senha'],
+                telefone: $dados['telefone'],
+                foto: $_FILES["foto"] ?? null,
+            );
+
+            $user = $this->authService->registerUser($userDTO) ?? [];
+
+            Response::json(['status' => 'success', 'user' => $user]);
+        } catch (Exception $e) {
+            Response::error($e->getMessage());
+        }
+    }
+
+    // Descontinuado
     public function getProfile()
     {
         try {
@@ -43,6 +84,7 @@ class UserController
             Response::error($e->getMessage());
         }
     }
+
 
     public function updateProfile(array $data)
     {

@@ -142,4 +142,11 @@ class UserRepository
 
         return $user;
     }
+
+    public function all(): array
+    {
+        $data = DatabaseService::fetch("SELECT * FROM {$this->table}");
+
+        return array_map(fn($user) => User::fromArray($user), $data);
+    }
 }

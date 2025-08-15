@@ -83,5 +83,5 @@ INSERT INTO tb_usuario (login, email, senha) VALUES
 
 # ROadmap
 
-Criar tela de login, onde passa o login e senha para validar no banco, depois armazenar na sessão o usuário e encaminhar para tela inicial. Se der erro, exibir mensagem de erro (via AJAX)
-Criar tela home com os dados do usuário listados
+Fazer tela home listar todos os usuários
+Otimizar tela de home.js para suportar mais de um modal (o script .js não pode pegar todos os forms mais. Precisa ter uma classe específica em todos os inputs que filtre)

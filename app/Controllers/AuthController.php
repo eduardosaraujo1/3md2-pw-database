@@ -24,41 +24,6 @@ class AuthController
         }
     }
 
-    public function register()
-    {
-        Response::view("registro");
-    }
-
-    public function signup($dados)
-    {
-        try {
-            // Form validation
-            $requiredFields = ['nome', 'login', 'email', 'senha', 'telefone'];
-
-            foreach ($requiredFields as $field) {
-                if (empty($dados[$field])) {
-                    throw new \Exception("O campo '{$field}' é obrigatório.");
-                }
-            }
-
-            // Logic
-            $userDTO = new UserRegisterDTO(
-                nome: $dados['nome'],
-                login: $dados['login'],
-                email: $dados['email'],
-                senha: $dados['senha'],
-                telefone: $dados['telefone'],
-                foto: $_FILES["foto"] ?? null,
-            );
-
-            $user = $this->authService->registerUser($userDTO) ?? [];
-
-            Response::json(['status' => 'success', 'user' => $user]);
-        } catch (\Exception $e) {
-            Response::error($e->getMessage());
-        }
-    }
-
     public function signIn(array $dados)
     {
         try {
