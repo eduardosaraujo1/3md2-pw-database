@@ -53,6 +53,9 @@ class UserService
         return $updated;
     }
 
+    /**
+     * @return User[]
+     */
     public function getAllUsers(): array
     {
         return $this->userRepository->all();

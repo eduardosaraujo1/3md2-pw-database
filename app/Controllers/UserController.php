@@ -33,7 +33,19 @@ class UserController
     {
         try {
             $users = $this->userService->getAllUsers();
-            Response::json($users);
+            $filtered = array_map(function ($user) {
+                if (is_object($user)) {
+                    $user = (array) $user;
+                }
+                return [
+                    'id' => $user['id'] ?? null,
+                    'nome' => $user['nome'] ?? null,
+                    'login' => $user['login'] ?? null,
+                    'email' => $user['email'] ?? null,
+                    'telefone' => $user['telefone'] ?? null,
+                ];
+            }, $users);
+            Response::json($filtered);
         } catch (Exception $e) {
             Response::error($e->getMessage());
         }
