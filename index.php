@@ -6,7 +6,6 @@ use App\Controllers\UserController;
 use App\Providers\Provider;
 use App\Repositories\UserRepository;
 use App\Services\AuthService;
-use App\Services\DatabaseService;
 use App\Services\SessionService;
 use App\Services\StorageService;
 use App\Services\UserService;
