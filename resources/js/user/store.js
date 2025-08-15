@@ -23,100 +23,6 @@ const ERROR_DICTIONARY = {
     password_mismatch: "As senhas não coincidem",
 };
 
-class FormController {
-    constructor(inputIds) {
-        if (!Array.isArray(inputIds) || inputIds.length === 0) {
-            throw new Error("inputIds must be a non-empty array");
-        }
-        this.inputIds = inputIds;
-        this.state = {};
-        this.pullFromDOM();
-    }
-
-    clear() {
-        this.inputIds.forEach((id) => {
-            const field = $(`input#${id}`);
-            this.state[id] = "";
-            field.val("");
-        });
-    }
-
-    pullFromDOM() {
-        this.inputIds.forEach((id) => {
-            const field = $(`input#${id}`);
-            this.state[id] = id === "foto" ? field.prop("files")?.[0] : field.val() ?? "";
-        });
-    }
-
-    pushToDOM() {
-        this.inputIds.forEach((id) => {
-            const field = $(`input#${id}`);
-            if (id === "foto") {
-                // Se necessário, adicionar lógica para colocar a imagem de volta no input
-            } else {
-                field.val(this.state[id] ?? "");
-            }
-        });
-    }
-
-    getValues() {
-        return { ...this.state };
-    }
-
-    setValue(id, value) {
-        if (this.inputIds.includes(id)) {
-            this.state[id] = value;
-            const field = $(`input#${id}`);
-            if (id === "foto") {
-                // Se necessário, adicionar lógica para colocar a imagem de volta no input
-            } else {
-                field.val(value);
-            }
-        }
-    }
-
-    submitForm(endpoint, onSuccess, onError) {
-        const formData = new FormData();
-
-        for (const [key, value] of Object.entries(this.getValues())) {
-            formData.append(key, value);
-        }
-
-        sendFormData({
-            endpoint,
-            formData,
-            onSuccess: (response) => {
-                if (onSuccess) onSuccess(response);
-            },
-            /** @param {JQuery.jqXHR} xhr */
-            onError: (xhr) => {
-                if (onError) onError(xhr);
-            },
-        });
-    }
-}
-
-class Validator {
-    constructor(rules) {
-        this.rules = rules;
-    }
-
-    validate(values) {
-        const errors = {};
-
-        for (const [field, rule] of Object.entries(this.rules)) {
-            const value = values[field];
-            // value é o valor do input verificado agora, values é o valor de todos os inputs do FormController
-            const error = rule(value, values);
-            if (error) {
-                errors[field] = error;
-            }
-        }
-
-        return errors;
-    }
-}
-
 class FormUserInterface {
     static displayErrors(errors) {
         FormUserInterface.clearErrors();
@@ -206,20 +112,30 @@ $(() => {
     refreshForm();
 
     btnSubmit.on("click", () => {
-        formController.submitForm(
+        formController.submit(
             "/users/store",
-            (response) => {},
+            (response) => {
+                btnCancel.trigger("click");
+            },
             /** @param {JQuery.jqXHR} xhr */
             (xhr) => {
                 const err = xhr.responseJSON;
                 FormUserInterface.displayGeneralMessage(err?.error ?? "Ocorreu um erro desconhecido", "error");
             }
         );
-        formController.clear();
-        refreshForm();
     });
     btnCancel.on("click", () => {
         formController.clear();
         refreshForm();
     });
 });
+
+// Testes
+function fillForm() {
+    document.querySelector("#nome").value = "Teste";
+    document.querySelector("#login").value = "teste" + Math.floor(Math.random() * 1000);
+    document.querySelector("#email").value = "teste" + Math.floor(Math.random() * 1000) + "@teste.com";
+    document.querySelector("#telefone").value = "11987654321";
+    document.querySelector("#senha").value = "Senha123!";
+    document.querySelector("#confirmSenha").value = "Senha123!";
+}
