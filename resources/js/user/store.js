@@ -1,8 +1,6 @@
 /// <reference path="../shared.js" />
 /// <reference path="../lib/jquery.js" />
 
-const { type } = require("jquery");
-
 /**
  * @typedef {Object} FormState
  * @property {string} nome
@@ -117,6 +115,9 @@ $(() => {
     btnSubmit.on("click", async () => {
         try {
             await formController.submit("/users/store");
+
+            // on success
+            $(document).trigger("reloadUserTable");
             btnCancel.trigger("click");
         } catch (err) {
             if (err && typeof err === "object" && "responseJSON" in err) {
