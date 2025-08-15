@@ -28,44 +28,10 @@ $userController = Provider::get(UserController::class);
 
 $uri = $_SERVER['REQUEST_URI'];
 $router = [
-    '/' => function () use ($userController) {
-        if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-            $userController->home();
-        }
-    },
+    // Auth
     '/login' => function () use ($authController) {
         if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             $authController->login();
-        }
-    },
-    '/register' => function () use ($authController) {
-        if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-            $authController->register();
-        }
-    },
-    '/users' => function () use ($userController) {
-        if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-            $userController->index();
-        }
-    },
-    '/user/store' => function () use ($userController) {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $userController->store($_POST);
-        }
-    },
-    '/profile' => function () use ($userController) {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $userController->getProfile();
-        }
-    },
-    '/profile/update' => function () use ($userController) {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $userController->updateProfile($_POST);
-        }
-    },
-    '/signup' => function () use ($authController) {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $authController->signup($_POST);
         }
     },
     '/signin' => function () use ($authController) {
@@ -76,6 +42,33 @@ $router = [
     '/signout' => function () use ($authController) {
         if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             $authController->signout();
+        }
+    },
+    // User
+    '/' => function () use ($userController) {
+        if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+            $userController->home();
+        }
+    },
+    '/users' => function () use ($userController) {
+        if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+            $userController->index();
+        }
+    },
+    '/users/store' => function () use ($userController) {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $userController->store($_POST);
+        }
+    },
+    // Deprecated
+    '/profile' => function () use ($userController) {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $userController->getProfile();
+        }
+    },
+    '/profile/update' => function () use ($userController) {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $userController->updateProfile($_POST);
         }
     },
 ];
