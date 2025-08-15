@@ -1,8 +1,6 @@
 /// <reference path="../shared.js" />
 /// <reference path="../lib/jquery.js" />
 
-const { type } = require("jquery");
-
 /**
  * @typedef {Object} FormState
  * @property {string} nome
