@@ -30,6 +30,14 @@ class FormController {
         this.pullFromDOM();
     }
 
+    clear() {
+        this.inputIds.forEach((id) => {
+            const field = $(`input#${id}`);
+            this.state[id] = "";
+            field.val("");
+        });
+    }
+
     pullFromDOM() {
         this.inputIds.forEach((id) => {
             const field = $(`input#${id}`);
@@ -43,7 +51,7 @@ class FormController {
             if (id === "foto") {
                 // Se necessário, adicionar lógica para colocar a imagem de volta no input
             } else {
-                field.val(this.state[id]);
+                field.val(this.state[id] ?? "");
             }
         });
     }
@@ -75,12 +83,9 @@ class FormController {
             endpoint,
             formData,
             onSuccess: (response) => {
-                FormUserInterface.displayGeneralMessage("Usuário cadastrado com sucesso", "success");
                 if (onSuccess) onSuccess(response);
             },
             onError: (xhr) => {
-                const err = xhr.responseJSON;
-                FormUserInterface.displayGeneralMessage(err?.error ?? "Ocorreu um erro desconhecido", "error");
                 if (onError) onError(xhr);
             },
         });
@@ -159,6 +164,7 @@ $(() => {
     });
 
     const btnSubmit = $(".js-register-form button#register-submit");
+    const btnCancel = $(".js-register-form button#register-cancel");
 
     // Lógica
     $(".show-password").on("click", (e) => {
@@ -196,6 +202,19 @@ $(() => {
     refreshForm();
 
     btnSubmit.on("click", () => {
-        formController.submitForm("/signup");
+        formController.submitForm(
+            "/users/store",
+            (response) => {},
+            (xhr) => {
+                const err = xhr.responseJSON;
+                FormUserInterface.displayGeneralMessage(err?.error ?? "Ocorreu um erro desconhecido", "error");
+            }
+        );
+        formController.clear();
+        refreshForm();
+    });
+    btnCancel.on("click", () => {
+        formController.clear();
+        refreshForm();
     });
 });
