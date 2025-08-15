@@ -60,13 +60,6 @@ CREATE SCHEMA IF NOT EXISTS pw_atividade;
 
 USE pw_atividade;
 
-CREATE TABLE tb_usuario (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    login VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL,
-    senha VARCHAR(255) NOT NULL
-);
-
 CREATE TABLE tb_contato (
     id INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(255) NOT NULL,
