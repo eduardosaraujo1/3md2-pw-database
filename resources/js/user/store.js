@@ -115,6 +115,9 @@ $(() => {
     btnSubmit.on("click", async () => {
         try {
             await formController.submit("/users/store");
+
+            // on success
+            $(document).trigger("reloadUserTable");
             btnCancel.trigger("click");
         } catch (err) {
             if (err && typeof err === "object" && "responseJSON" in err) {
