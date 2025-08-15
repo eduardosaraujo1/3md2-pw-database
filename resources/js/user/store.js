@@ -25,6 +25,9 @@ const ERROR_DICTIONARY = {
 
 class FormController {
     constructor(inputIds) {
+        if (!Array.isArray(inputIds) || inputIds.length === 0) {
+            throw new Error("inputIds must be a non-empty array");
+        }
         this.inputIds = inputIds;
         this.state = {};
         this.pullFromDOM();
@@ -85,6 +88,7 @@ class FormController {
             onSuccess: (response) => {
                 if (onSuccess) onSuccess(response);
             },
+            /** @param {JQuery.jqXHR} xhr */
             onError: (xhr) => {
                 if (onError) onError(xhr);
             },
@@ -205,6 +209,7 @@ $(() => {
         formController.submitForm(
             "/users/store",
             (response) => {},
+            /** @param {JQuery.jqXHR} xhr */
             (xhr) => {
                 const err = xhr.responseJSON;
                 FormUserInterface.displayGeneralMessage(err?.error ?? "Ocorreu um erro desconhecido", "error");
