@@ -1,5 +1,8 @@
 /// <reference path="../shared.js" />
 /// <reference path="../lib/jquery.js" />
+
+const { type } = require("jquery");
+
 /**
  * @typedef {Object} FormState
  * @property {string} nome
@@ -111,18 +114,18 @@ $(() => {
     $(".js-register-form input").on("keyup change", refreshForm);
     refreshForm();
 
-    btnSubmit.on("click", () => {
-        formController.submit(
-            "/users/store",
-            (response) => {
-                btnCancel.trigger("click");
-            },
-            /** @param {JQuery.jqXHR} xhr */
-            (xhr) => {
-                const err = xhr.responseJSON;
-                FormUserInterface.displayGeneralMessage(err?.error ?? "Ocorreu um erro desconhecido", "error");
+    btnSubmit.on("click", async () => {
+        try {
+            await formController.submit("/users/store");
+            btnCancel.trigger("click");
+        } catch (err) {
+            if (err && typeof err === "object" && "responseJSON" in err) {
+                const msg = err.responseJSON;
+                FormUserInterface.displayGeneralMessage(msg?.["error"], "error");
+            } else {
+                throw err;
             }
-        );
+        }
     });
     btnCancel.on("click", () => {
         formController.clear();

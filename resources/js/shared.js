@@ -69,22 +69,18 @@ class FormController {
         });
     }
 
-    submit(endpoint, onSuccess, onError) {
+    submit(endpoint) {
         const formData = new FormData();
-        for (const [key, value] of Object.entries(this.getValues())) {
-            formData.append(key, value);
+        const values = this.getValues();
+
+        for (const key in values) {
+            formData.append(key, values[key]);
         }
-        sendFormData({
+
+        return sendFormData({
             endpoint,
             method: "POST",
             formData,
-            onSuccess: (response) => {
-                if (onSuccess) onSuccess(response);
-            },
-            /** @param {JQuery.jqXHR} xhr */
-            onError: (xhr) => {
-                if (onError) onError(xhr);
-            },
         });
     }
 }
@@ -110,27 +106,24 @@ class Validator {
     }
 }
 
-function sendFormData({ endpoint, method = "POST", formData, onSuccess, onError }) {
-    $.ajax({
-        url: endpoint,
-        method: method,
-        data: formData,
-        contentType: false,
-        processData: false,
-        xhrFields: {
-            withCredentials: true,
-        },
-        success: function (response) {
-            if (typeof onSuccess === "function") {
-                onSuccess(response);
-            }
-        },
-        error: function (xhr) {
-            if (typeof onError === "function") {
-                onError(xhr);
-            } else {
-                console.error("AJAX error:", xhr);
-            }
-        },
+async function sendFormData({ endpoint, method = "POST", formData }) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: endpoint,
+            method: method,
+            data: formData,
+            contentType: false,
+            processData: false,
+            xhrFields: {
+                withCredentials: true,
+            },
+            success: function (response) {
+                resolve(response);
+            },
+            /** @param {jQuery.jqXHR} xhr */
+            error: function (xhr) {
+                reject(xhr);
+            },
+        });
     });
 }

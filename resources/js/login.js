@@ -21,19 +21,22 @@ $(() => {
     updateButtonState();
 
     submitButton.on("click", () => {
-        formController.submit(
-            "/signin",
-            (res) => {
+        (async () => {
+            try {
+                const res = await formController.submit("/signin");
                 if (res.error) {
                     errorMessage.text(res.error).addClass("show");
                 } else if (res.status === "success") {
                     window.location.href = "/";
                 }
-            },
-            (xhr) => {
-                const res = xhr.responseJSON;
-                errorMessage.text(res?.["error"] ?? "Erro interno no servidor").addClass("show");
+            } catch (err) {
+                if (err && typeof err === "object" && "responseJSON" in err) {
+                    const res = err.responseJSON;
+                    errorMessage.text(res?.["error"] ?? "Erro interno no servidor").addClass("show");
+                } else {
+                    throw err;
+                }
             }
-        );
+        })();
     });
 });
