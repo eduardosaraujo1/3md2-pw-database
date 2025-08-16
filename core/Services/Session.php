@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Services;
+namespace Core\Services;
 
-class SessionService
+class Session
 {
     public function __construct()
     {

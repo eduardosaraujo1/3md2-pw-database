@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\DTO\SignInCredentialsDTO;
+use App\DTO\LoginDTO;
 use App\DTO\UserRegisterDTO;
 use App\Helpers\Response;
 use App\Providers\Provider;
@@ -37,7 +37,7 @@ class AuthController
             }
 
             // Logic
-            $signInDTO = new SignInCredentialsDTO(
+            $signInDTO = new LoginDTO(
                 login: $dados['login'],
                 senha: $dados['senha']
             );

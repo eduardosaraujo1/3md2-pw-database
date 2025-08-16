@@ -2,7 +2,7 @@
 
 namespace App\DTO;
 
-class SignInCredentialsDTO
+class LoginDTO
 {
     public function __construct(
         public string $login,

@@ -3,7 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\User;
-use App\Services\DatabaseService;
+use Core\Database\DatabaseService; // Ensure this is the correct namespace for DatabaseService
 
 class UserRepository
 {

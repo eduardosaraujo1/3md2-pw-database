@@ -5,13 +5,13 @@ namespace App\Services;
 use App\DTO\UserRegisterDTO;
 use App\Models\User;
 use App\Repositories\UserRepository;
-use App\Services\SessionService;
+use Core\Services\Session;
 
 class UserService
 {
     public function __construct(
         public UserRepository $userRepository,
-        public SessionService $sessionService
+        public Session $sessionService
     ) {
     }
 

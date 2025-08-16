@@ -3,7 +3,7 @@ spl_autoload_register(function ($class) {
     $project_root = realpath(__DIR__ . '/..');
     $psr4 = [
         "App\\" => "app/",
-        // "Core\\" => "core/",
+        "Core\\" => "core/",
     ];
 
     foreach ($psr4 as $prefix => $baseDir) {

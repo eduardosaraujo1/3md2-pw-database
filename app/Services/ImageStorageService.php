@@ -4,6 +4,7 @@ namespace App\Services;
 
 class ImageStorageService
 {
+    // TODO: Utilizar classe Core\Services\Storage
     private array $allowedTypes;
     private int $maxFileSize;
 

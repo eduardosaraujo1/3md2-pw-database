@@ -2,20 +2,16 @@
 
 namespace App\Services;
 
-use App\DTO\SignInCredentialsDTO;
+use App\DTO\LoginDTO;
 use App\DTO\UserRegisterDTO;
-use App\Helpers\Response;
-use App\Helpers\Result;
 use App\Models\User;
-use App\Providers\Provider;
 use App\Repositories\UserRepository;
-use Exception;
 
 class AuthService
 {
     public function __construct(
         public UserRepository $userRepository,
-        public SessionService $sessionService,
+        public Session $sessionService,
         public ImageStorageService $ImageStorageService
     ) {
     }
@@ -48,7 +44,7 @@ class AuthService
         return $this->userRepository->getLatest();
     }
 
-    public function signInWithCredentials(SignInCredentialsDTO $credentials): ?User
+    public function signInWithCredentials(LoginDTO $credentials): ?User
     {
         $user = $this->userRepository->findByLoginAndPassword($credentials->login, $credentials->senha);
 

@@ -3,10 +3,9 @@
 namespace App\Controllers;
 
 use App\DTO\UserRegisterDTO;
-use App\Helpers\Response;
-use App\Providers\Provider;
 use App\Services\AuthService;
 use App\Services\UserService;
+use Core\Http\Response;
 use PDOException;
 use Exception;
 
@@ -126,6 +125,7 @@ class UserController
             Response::json(['status' => 'success', 'user' => $updatedUser]);
 
         } catch (PDOException $e) {
+            // TODO: PDOException deveria ficar no UserRepository, não aqui!
             if ($e->getCode() === '23000' && str_contains($e->getMessage(), 'Duplicate entry')) {
                 if (str_contains($e->getMessage(), 'login')) {
                     Response::error("Este login já está em uso. Por favor, escolha outro.");

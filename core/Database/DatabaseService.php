@@ -1,9 +1,7 @@
 <?php
+namespace Core\Database;
 
-namespace App\Services;
-
-use \PDO;
-use \PDOException;
+use PDO;
 
 class DatabaseService
 {
@@ -11,13 +9,13 @@ class DatabaseService
 
     public function __construct()
     {
-        $this->pdo = self::getPDO();
+        $this->pdo = self::connect();
     }
 
     /**
      * Initializes and returns a PDO instance, creates schema if needed.
      */
-    public static function getPDO(): PDO
+    public static function connect(): PDO
     {
         $config = require __DIR__ . '/../../config/database.php';
 
@@ -27,27 +25,23 @@ class DatabaseService
         $schema = $config["database"];
         $port = $config["port"];
 
-        try {
-            $dsn = "mysql:host=$host;port=$port";
-            $pdo = new PDO($dsn, $username, $password);
-            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $dsn = "mysql:host=$host;port=$port";
+        $pdo = new PDO($dsn, $username, $password);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-            $stmt = $pdo->query("SHOW SCHEMAS LIKE " . $pdo->quote($schema));
-            $db_exists = $stmt->fetchColumn();
+        $stmt = $pdo->query("SHOW SCHEMAS LIKE " . $pdo->quote($schema));
+        $db_exists = $stmt->fetchColumn();
 
-            if (!$db_exists) {
-                $sqlFile = __DIR__ . '/../../script.sql';
-                if (file_exists($sqlFile)) {
-                    $sql = file_get_contents($sqlFile);
-                    $pdo->exec($sql);
-                }
+        if (!$db_exists) {
+            $sqlFile = __DIR__ . '/../../script.sql';
+            if (file_exists($sqlFile)) {
+                $sql = file_get_contents($sqlFile);
+                $pdo->exec($sql);
             }
-
-            $pdo->exec("USE `$schema`");
-            return $pdo;
-        } catch (PDOException $e) {
-            throw new \Exception("Connection failed: " . $e->getMessage());
         }
+
+        $pdo->exec("USE `$schema`");
+        return $pdo;
     }
 
     public function unsafe_query(string $query): bool|\PDOStatement

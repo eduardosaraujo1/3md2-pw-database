@@ -7,7 +7,7 @@ use App\Providers\Provider;
 use App\Repositories\UserRepository;
 use App\Services\AuthService;
 use App\Services\DatabaseService;
-use App\Services\SessionService;
+use App\Services\Session;
 use App\Services\ImageStorageService;
 use App\Services\UserService;
 
@@ -21,7 +21,7 @@ function createServiceContainer(): void
         maxFileSize: $oneHundredMB, // 100 MB max file size
     );
 
-    $sessionService = new SessionService();
+    $sessionService = new Session();
     $databaseService = new DatabaseService();
 
     $userRepository = new UserRepository($databaseService);
@@ -42,7 +42,7 @@ function createServiceContainer(): void
         authService: $authService
     );
 
-    Provider::registerSingleton(SessionService::class, $sessionService);
+    Provider::registerSingleton(Session::class, $sessionService);
     Provider::registerSingleton(ImageStorageService::class, $imageStorageService);
     Provider::registerSingleton(DatabaseService::class, $databaseService);
     Provider::registerSingleton(UserRepository::class, $userRepository);

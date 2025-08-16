@@ -1,13 +1,49 @@
 <?php
 
-namespace App\Providers;
+namespace Core\Providers;
 
 use Closure;
 
-enum ProviderEntryType
+class Provider
 {
-    case Factory;
-    case Singleton;
+    private static self $_self;
+    private array $entries = [];
+
+    private function __construct()
+    {
+    }
+
+    private static function instance(): self
+    {
+        if (!isset(self::$_self)) {
+            self::$_self = new self();
+        }
+
+        return self::$_self;
+    }
+
+    public static function get(string $class): mixed
+    {
+        $self = self::instance();
+
+        if (!isset($self->entries[$class])) {
+            throw new \RuntimeException("No provider registered for class: {$class}");
+        }
+
+        return $self->entries[$class]->resolve();
+    }
+
+    public static function registerFactory(string $class, Closure $factory): void
+    {
+        $self = self::instance();
+        $self->entries[$class] = new FactoryProviderEntry($class, $factory);
+    }
+
+    public static function registerSingleton(string $class, mixed $instance): void
+    {
+        $self = self::instance();
+        $self->entries[$class] = new SingletonProviderEntry($class, $instance);
+    }
 }
 
 interface ProviderEntry
@@ -71,44 +107,8 @@ class FactoryProviderEntry implements ProviderEntry
     }
 }
 
-class Provider
+enum ProviderEntryType
 {
-    private static self $_self;
-    private array $entries = [];
-
-    private function __construct()
-    {
-    }
-
-    private static function instance(): self
-    {
-        if (!isset(self::$_self)) {
-            self::$_self = new self();
-        }
-
-        return self::$_self;
-    }
-
-    public static function get(string $class): mixed
-    {
-        $self = self::instance();
-
-        if (!isset($self->entries[$class])) {
-            throw new \RuntimeException("No provider registered for class: {$class}");
-        }
-
-        return $self->entries[$class]->resolve();
-    }
-
-    public static function registerFactory(string $class, Closure $factory): void
-    {
-        $self = self::instance();
-        $self->entries[$class] = new FactoryProviderEntry($class, $factory);
-    }
-
-    public static function registerSingleton(string $class, mixed $instance): void
-    {
-        $self = self::instance();
-        $self->entries[$class] = new SingletonProviderEntry($class, $instance);
-    }
+    case Factory;
+    case Singleton;
 }
