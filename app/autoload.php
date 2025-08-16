@@ -1,6 +1,5 @@
 <?php
 spl_autoload_register(function ($class) {
-    $project_root = realpath(__DIR__ . '/..');
     $psr4 = [
         "App\\" => "app/",
         "Core\\" => "core/",
@@ -15,7 +14,7 @@ spl_autoload_register(function ($class) {
         // $relativeClass formato: Controllers\AuthController
         $relativeClass = substr($class, strlen($prefix));
         $relativePath = $baseDir . str_replace('\\', '/', $relativeClass) . '.php';
-        $file = "$project_root/$relativePath";
+        $file = PROJECT_ROOT . "/$relativePath";
 
         if (file_exists($file)) {
             require_once $file;

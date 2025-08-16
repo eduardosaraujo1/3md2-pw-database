@@ -7,22 +7,26 @@ use App\Repositories\UserRepository;
 use App\Services\AuthService;
 use App\Services\ImageStorageService;
 use App\Services\UserService;
-use Core\Config\DatabaseConfig;
+use Core\Config\Configuration;
+use Core\Config\ConnectionConfig;
 use Core\Container\Container;
 use Core\Database\MySQLConnection;
+use Core\Database\SQLiteConnection;
 use Core\Services\Session;
 use Core\Services\Database;
+
+define('PROJECT_ROOT', __DIR__);
 
 // Service Container
 $container = Container::build(function (Container $container) {
     $sessionService = new Session();
 
-    $migrationFile = __DIR__ . '/database/migrations/mysql.sql';
-    $config = new DatabaseConfig(__DIR__ . '/config/database.php');
-    $connection = new MySQLConnection(
-        config: $config,
-        migrateFile: $migrationFile,
+    $connection = MySQLConnection::fromConfig(
+        config: new Configuration("database")
     );
+    // $connection = SQLiteConnection::fromConfig(
+    //     config: new Configuration("database")
+    // );
     $databaseService = new Database(
         connection: $connection
     );

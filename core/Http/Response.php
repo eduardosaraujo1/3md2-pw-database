@@ -21,7 +21,7 @@ class Response
     public static function view(string $path, int $code = 200)
     {
         http_response_code($code);
-        $path = realpath(__DIR__ . "/../../resources/views/$path.html");
+        $path = realpath(PROJECT_ROOT . "/resources/views/$path.html");
         if ($path) {
             require $path;
         } else {
