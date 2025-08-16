@@ -1,5 +1,6 @@
 <?php
 return [
+    'default' => 'mysql',
     'mysql' => [
         'connection' => [
             'host' => 'localhost',

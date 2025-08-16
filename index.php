@@ -8,7 +8,6 @@ use App\Services\AuthService;
 use App\Services\ImageStorageService;
 use App\Services\UserService;
 use Core\Config\Configuration;
-use Core\Config\ConnectionConfig;
 use Core\Container\Container;
 use Core\Database\MySQLConnection;
 use Core\Database\SQLiteConnection;
@@ -21,11 +20,11 @@ define('PROJECT_ROOT', __DIR__);
 
 // Service Container
 $container = Container::build(function (Container $container) {
-    $db_driver = 0;
     $connectionConfig = new Configuration("database");
+    $db_driver = $connectionConfig->get()['default'];
     $connection = match ($db_driver) {
-        0 => SQLiteConnection::fromConfig(config: $connectionConfig),
-        1 => MySQLConnection::fromConfig(config: $connectionConfig),
+        'sqlite' => SQLiteConnection::fromConfig(config: $connectionConfig),
+        'mysql' => MySQLConnection::fromConfig(config: $connectionConfig),
         default => throw new InvalidArgumentException("Unsupported database driver: $db_driver"),
     };
     $databaseService = new Database(
@@ -38,7 +37,7 @@ $container = Container::build(function (Container $container) {
     $imageStorageService = new ImageStorageService(
         storage: $storageService,
         allowedTypes: $allowedTypes,
-        maxFileSize: $oneHundredMB, // 100 MB max file size
+        maxFileSize: $oneHundredMB,
     );
 
     $sessionService = new Session();
