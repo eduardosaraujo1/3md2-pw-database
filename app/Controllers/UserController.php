@@ -3,10 +3,11 @@
 namespace App\Controllers;
 
 use App\Domain\DTO\UserRegisterDTO;
+use App\Models\User;
 use App\Services\AuthService;
 use App\Services\UserService;
+use Core\Http\Request;
 use Core\Http\Response;
-use PDOException;
 use Exception;
 
 class UserController
@@ -30,16 +31,13 @@ class UserController
     {
         try {
             $users = $this->userService->getAllUsers();
-            $filtered = array_map(function ($user) {
-                if (is_object($user)) {
-                    $user = (array) $user;
-                }
+            $filtered = array_map(function (User $user) {
                 return [
-                    'id' => $user['id'] ?? null,
-                    'nome' => $user['nome'] ?? null,
-                    'login' => $user['login'] ?? null,
-                    'email' => $user['email'] ?? null,
-                    'telefone' => $user['telefone'] ?? null,
+                    'id' => $user->id,
+                    'nome' => $user->nome,
+                    'login' => $user->login,
+                    'email' => $user->email,
+                    'telefone' => $user->telefone,
                 ];
             }, $users);
             Response::json($filtered);
@@ -48,13 +46,14 @@ class UserController
         }
     }
 
-    public function store(array $dados)
+    public function store(Request $request)
     {
         try {
             // Form validation
-            $requiredFields = ['nome', 'login', 'email', 'senha', 'telefone'];
+            $required = ['nome', 'login', 'email', 'senha', 'telefone'];
+            $dados = $request->only($required);
 
-            foreach ($requiredFields as $field) {
+            foreach ($required as $field) {
                 if (empty($dados[$field])) {
                     throw new Exception("O campo '{$field}' é obrigatório.");
                 }
@@ -70,7 +69,7 @@ class UserController
                 foto: $_FILES["foto"] ?? null,
             );
 
-            $user = $this->authService->registerUser($userDTO) ?? [];
+            $user = $this->userService->createUser($userDTO) ?? [];
 
             Response::json(['status' => 'success', 'user' => $user]);
         } catch (Exception $e) {
@@ -95,9 +94,10 @@ class UserController
     }
 
 
-    public function updateProfile(array $data)
+    public function updateProfile(Request $request)
     {
         try {
+            $data = $request->all();
             $user = $this->userService->getCurrentUser();
 
             if (!$user) {
@@ -124,22 +124,8 @@ class UserController
 
             Response::json(['status' => 'success', 'user' => $updatedUser]);
 
-        } catch (PDOException $e) {
-            // TODO: PDOException deveria ficar no UserRepository, não aqui!
-            if ($e->getCode() === '23000' && str_contains($e->getMessage(), 'Duplicate entry')) {
-                if (str_contains($e->getMessage(), 'login')) {
-                    Response::error("Este login já está em uso. Por favor, escolha outro.");
-                } elseif (str_contains($e->getMessage(), 'email')) {
-                    Response::error("Este e-mail já está cadastrado.");
-                } else {
-                    Response::error("Dados duplicados: verifique os campos únicos.");
-                }
-            } else {
-                Response::error("Erro de banco de dados: " . $e->getMessage());
-            }
         } catch (Exception $e) {
             Response::error($e->getMessage());
         }
-
     }
 }

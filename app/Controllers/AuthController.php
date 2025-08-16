@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Domain\DTO\LoginDTO;
 use App\Services\AuthService;
+use Core\Http\Request;
 use Core\Http\Response;
 
 class AuthController
@@ -22,11 +23,12 @@ class AuthController
         }
     }
 
-    public function signIn(array $dados)
+    public function signIn(Request $request)
     {
         try {
             // Form validation
             $required = ['login', 'senha'];
+            $dados = $request->only($required);
 
             foreach ($required as $field) {
                 if (empty($dados[$field])) {
@@ -55,6 +57,6 @@ class AuthController
     public function signOut()
     {
         $this->authService->signOut();
-        return Response::redirect('/');
+        Response::redirect('/');
     }
 }

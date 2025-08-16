@@ -11,7 +11,8 @@ class UserService
 {
     public function __construct(
         public UserRepository $userRepository,
-        public Session $sessionService
+        public Session $sessionService,
+        public ImageStorageService $imageStorageService
     ) {
     }
 
@@ -30,25 +31,67 @@ class UserService
 
     public function updateUser(int $id, UserRegisterDTO $data): User
     {
-        $existingUser = $this->userRepository->findById($id);
+        $existingUser = $this->userRepository->findById((string) $id);
 
         if (!$existingUser) {
             throw new \Exception("Usuário não encontrado.");
         }
 
-        $success = $this->userRepository->update($id, $data->toArray());
+        try {
+            $success = $this->userRepository->update($id, $data->toArray());
 
-        if (!$success) {
-            throw new \Exception("Falha ao atualizar o usuário.");
+            if (!$success) {
+                throw new \Exception("Falha ao atualizar o usuário.");
+            }
+
+            $updated = $this->userRepository->findById((string) $id);
+
+            if (!$updated) {
+                throw new \Exception("Erro ao recuperar o usuário atualizado.");
+            }
+
+            return $updated;
+        } catch (\Exception $e) {
+            if (str_contains($e->getMessage(), 'Duplicate entry')) {
+                if (str_contains($e->getMessage(), 'login')) {
+                    throw new \Exception("Este login já está em uso. Por favor, escolha outro.");
+                } elseif (str_contains($e->getMessage(), 'email')) {
+                    throw new \Exception("Este e-mail já está cadastrado.");
+                } else {
+                    throw new \Exception("Dados duplicados: verifique os campos únicos.");
+                }
+            }
+
+            throw $e;
+        }
+    }
+
+    public function createUser(UserRegisterDTO $data): User|null
+    {
+        // Prevent duplicates
+        $duplicates = $this->userRepository->checkDuplicates(
+            email: $data->email,
+            login: $data->login
+        );
+
+        if ($duplicates['login']) {
+            throw new \InvalidArgumentException("Login já está em uso");
+        }
+        if ($duplicates['email']) {
+            throw new \InvalidArgumentException("Email já está em uso");
         }
 
-        $updated = $this->userRepository->findById($id);
-
-        if (!$updated) {
-            throw new \Exception("Erro ao recuperar o usuário atualizado.");
+        // Store photo
+        $dataArray = $data->toArray();
+        if ($data->foto) {
+            $dataArray['foto'] = $this->imageStorageService->store($data->foto);
         }
 
-        return $updated;
+        // Insert registry
+        $this->userRepository->insert($dataArray);
+
+        // read last result
+        return $this->userRepository->getLatest();
     }
 
     /**

@@ -21,19 +21,23 @@ class UserRepository
      */
     public function insert(array $data): bool
     {
-        return $this->databaseService->query(
-            query: "
-                INSERT INTO $this->table (nome, login, senha, email, telefone, foto) VALUES
-                (:nome, :login, :senha, :email, :telefone, :foto)",
-            params: [
-                "nome" => $data['nome'],
-                "login" => $data['login'],
-                "senha" => password_hash($data['senha'], PASSWORD_BCRYPT),
-                "email" => $data['email'],
-                "telefone" => $data['telefone'],
-                "foto" => $data['foto']
-            ]
-        );
+        try {
+            return $this->databaseService->query(
+                query: "
+                    INSERT INTO $this->table (nome, login, senha, email, telefone, foto) VALUES
+                    (:nome, :login, :senha, :email, :telefone, :foto)",
+                params: [
+                    "nome" => $data['nome'],
+                    "login" => $data['login'],
+                    "senha" => password_hash($data['senha'], PASSWORD_BCRYPT),
+                    "email" => $data['email'],
+                    "telefone" => $data['telefone'],
+                    "foto" => $data['foto']
+                ]
+            );
+        } catch (\PDOException $e) {
+            throw new \Exception("Erro ao inserir usuário: " . $e->getMessage());
+        }
     }
 
     /**
@@ -45,25 +49,29 @@ class UserRepository
      */
     public function update(int $id, array $data): bool
     {
-        return $this->databaseService->query(
-            query: "
-            UPDATE {$this->table} SET
-                nome = :nome,
-                login = :login,
-                senha = :senha,
-                email = :email,
-                telefone = :telefone
-            WHERE id = :id
-        ",
-            params: [
-                "id" => $id,
-                "nome" => $data['nome'],
-                "login" => $data['login'],
-                "senha" => password_hash($data['senha'], PASSWORD_BCRYPT),
-                "email" => $data['email'],
-                "telefone" => $data['telefone'],
-            ]
-        );
+        try {
+            return $this->databaseService->query(
+                query: "
+                UPDATE {$this->table} SET
+                    nome = :nome,
+                    login = :login,
+                    senha = :senha,
+                    email = :email,
+                    telefone = :telefone
+                WHERE id = :id
+            ",
+                params: [
+                    "id" => $id,
+                    "nome" => $data['nome'],
+                    "login" => $data['login'],
+                    "senha" => password_hash($data['senha'], PASSWORD_BCRYPT),
+                    "email" => $data['email'],
+                    "telefone" => $data['telefone'],
+                ]
+            );
+        } catch (\PDOException $e) {
+            throw new \Exception("Erro ao atualizar usuário: " . $e->getMessage());
+        }
     }
 
     public function getLatest(): User|null

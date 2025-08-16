@@ -12,43 +12,47 @@ use Core\Config\ConnectionConfig;
 use Core\Container\Container;
 use Core\Database\MySQLConnection;
 use Core\Database\SQLiteConnection;
+use Core\Http\Request;
 use Core\Services\Session;
 use Core\Services\Database;
+use Core\Services\Storage;
 
 define('PROJECT_ROOT', __DIR__);
 
 // Service Container
 $container = Container::build(function (Container $container) {
-    $sessionService = new Session();
-
-    $connection = MySQLConnection::fromConfig(
-        config: new Configuration("database")
-    );
-    // $connection = SQLiteConnection::fromConfig(
-    //     config: new Configuration("database")
-    // );
+    $db_driver = 0;
+    $connectionConfig = new Configuration("database");
+    $connection = match ($db_driver) {
+        0 => SQLiteConnection::fromConfig(config: $connectionConfig),
+        1 => MySQLConnection::fromConfig(config: $connectionConfig),
+        default => throw new InvalidArgumentException("Unsupported database driver: $db_driver"),
+    };
     $databaseService = new Database(
         connection: $connection
     );
 
+    $storageService = new Storage();
     $oneHundredMB = 100 * 1024; // in kilobytes
     $allowedTypes = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
     $imageStorageService = new ImageStorageService(
+        storage: $storageService,
         allowedTypes: $allowedTypes,
         maxFileSize: $oneHundredMB, // 100 MB max file size
     );
 
+    $sessionService = new Session();
     $userRepository = new UserRepository(
         databaseService: $databaseService
     );
     $authService = new AuthService(
         userRepository: $userRepository,
         sessionService: $sessionService,
-        ImageStorageService: $imageStorageService
     );
     $userService = new UserService(
         userRepository: $userRepository,
-        sessionService: $sessionService
+        sessionService: $sessionService,
+        imageStorageService: $imageStorageService
     );
 
     $authController = new AuthController(
@@ -69,6 +73,9 @@ $container = Container::build(function (Container $container) {
     $container->singleton(UserController::class, $userController);
 });
 
+// Request
+$request = Request::createFromGlobals();
+
 // Router
 /** @var AuthController */
 $authController = $container->make(AuthController::class);
@@ -76,48 +83,49 @@ $authController = $container->make(AuthController::class);
 $userController = $container->make(UserController::class);
 
 $uri = $_SERVER['REQUEST_URI'];
+$method = $request->method();
 $router = [
     // Auth
-    '/login' => function () use ($authController) {
-        if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    '/login' => function () use ($authController, $request) {
+        if ($request->method() === 'GET') {
             $authController->login();
         }
     },
-    '/signin' => function () use ($authController) {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $authController->signin($_POST);
+    '/signin' => function () use ($authController, $request) {
+        if ($request->method() === 'POST') {
+            $authController->signin($request);
         }
     },
-    '/signout' => function () use ($authController) {
-        if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    '/signout' => function () use ($authController, $request) {
+        if ($request->method() === 'GET') {
             $authController->signout();
         }
     },
     // User
-    '/' => function () use ($userController) {
-        if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    '/' => function () use ($userController, $request) {
+        if ($request->method() === 'GET') {
             $userController->home();
         }
     },
-    '/users' => function () use ($userController) {
-        if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    '/users' => function () use ($userController, $request) {
+        if ($request->method() === 'GET') {
             $userController->index();
         }
     },
-    '/users/store' => function () use ($userController) {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $userController->store($_POST);
+    '/users/store' => function () use ($userController, $request) {
+        if ($request->method() === 'POST') {
+            $userController->store($request);
         }
     },
     // Deprecated
-    '/profile' => function () use ($userController) {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    '/profile' => function () use ($userController, $request) {
+        if ($request->method() === 'POST') {
             $userController->getProfile();
         }
     },
-    '/profile/update' => function () use ($userController) {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $userController->updateProfile($_POST);
+    '/profile/update' => function () use ($userController, $request) {
+        if ($request->method() === 'POST') {
+            $userController->updateProfile($request);
         }
     },
 ];
@@ -128,6 +136,6 @@ if (!array_key_exists($uri, $router)) {
 }
 
 $callback = $router[$uri];
-$response = $callback();
+$response = $callback($request);
 
 // End Router

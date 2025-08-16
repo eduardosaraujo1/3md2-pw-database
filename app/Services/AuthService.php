@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Domain\DTO\LoginDTO;
-use App\Domain\DTO\UserRegisterDTO;
 use App\Models\User;
 use App\Repositories\UserRepository;
 use Core\Services\Session;
@@ -12,37 +11,8 @@ class AuthService
 {
     public function __construct(
         public UserRepository $userRepository,
-        public Session $sessionService,
-        public ImageStorageService $ImageStorageService
+        public Session $sessionService
     ) {
-    }
-
-    public function registerUser(UserRegisterDTO $data): User|null
-    {
-        // Prevent duplicates
-        $duplicates = $this->userRepository->checkDuplicates(
-            email: $data->email,
-            login: $data->login
-        );
-
-        if ($duplicates['login']) {
-            throw new \InvalidArgumentException("Login já está em uso");
-        }
-        if ($duplicates['email']) {
-            throw new \InvalidArgumentException("Email já está em uso");
-        }
-
-        // Store photo
-        $dataArray = $data->toArray();
-        if ($data->foto) {
-            $dataArray['foto'] = $this->ImageStorageService->store($data->foto);
-        }
-
-        // Insert registry
-        $this->userRepository->insert($dataArray);
-
-        // read last result
-        return $this->userRepository->getLatest();
     }
 
     public function signInWithCredentials(LoginDTO $credentials): ?User

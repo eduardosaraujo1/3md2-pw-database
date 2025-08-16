@@ -38,4 +38,9 @@ class Request
             ARRAY_FILTER_USE_KEY
         );
     }
+
+    public function method(): string
+    {
+        return $this->server['REQUEST_METHOD'] ?? 'GET';
+    }
 }
