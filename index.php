@@ -10,10 +10,10 @@ use App\Services\DatabaseService;
 use App\Services\Session;
 use App\Services\ImageStorageService;
 use App\Services\UserService;
+use Core\Container\Container;
 
 // Service Container
-function createServiceContainer(): void
-{
+$container = Container::build(function (Container $container) {
     $oneHundredMB = 100 * 1024; // in kilobytes
     $allowedTypes = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
     $imageStorageService = new ImageStorageService(
@@ -42,24 +42,21 @@ function createServiceContainer(): void
         authService: $authService
     );
 
-    Provider::registerSingleton(Session::class, $sessionService);
-    Provider::registerSingleton(ImageStorageService::class, $imageStorageService);
-    Provider::registerSingleton(DatabaseService::class, $databaseService);
-    Provider::registerSingleton(UserRepository::class, $userRepository);
-    Provider::registerSingleton(AuthService::class, $authService);
-    Provider::registerSingleton(UserService::class, $userService);
-    Provider::registerSingleton(AuthController::class, $authController);
-    Provider::registerSingleton(UserController::class, $userController);
-}
-
-createServiceContainer();
-// End Service Container
+    $container->singleton(Session::class, $sessionService);
+    $container->singleton(ImageStorageService::class, $imageStorageService);
+    $container->singleton(DatabaseService::class, $databaseService);
+    $container->singleton(UserRepository::class, $userRepository);
+    $container->singleton(AuthService::class, $authService);
+    $container->singleton(UserService::class, $userService);
+    $container->singleton(AuthController::class, $authController);
+    $container->singleton(UserController::class, $userController);
+});
 
 // Router
 /** @var AuthController */
-$authController = Provider::get(AuthController::class);
+$authController = $container->make(AuthController::class);
 /** @var UserController */
-$userController = Provider::get(UserController::class);
+$userController = $container->make(UserController::class);
 
 $uri = $_SERVER['REQUEST_URI'];
 $router = [
