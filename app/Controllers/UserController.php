@@ -51,7 +51,7 @@ class UserController
         try {
             // Form validation
             $required = ['nome', 'login', 'email', 'senha', 'telefone'];
-            $dados = $request->only($required);
+            $dados = $request->only([...$required, 'foto']);
 
             foreach ($required as $field) {
                 if (empty($dados[$field])) {
@@ -66,7 +66,7 @@ class UserController
                 email: $dados['email'],
                 senha: $dados['senha'],
                 telefone: $dados['telefone'],
-                foto: $_FILES["foto"] ?? null,
+                foto: $dados["foto"] ?? null,
             );
 
             $user = $this->userService->createUser($userDTO) ?? [];

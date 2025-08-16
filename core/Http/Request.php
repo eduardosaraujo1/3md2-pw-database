@@ -26,7 +26,7 @@ class Request
 
     public function all(): array
     {
-        return array_merge($this->getParams, $this->postParams);
+        return array_merge($this->getParams, $this->postParams, $this->files);
     }
 
     public function only(array $keys): array

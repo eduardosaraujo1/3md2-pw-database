@@ -53,7 +53,7 @@ class SQLiteConnection implements Connection
             throw new \InvalidArgumentException("Configuration array is missing required keys.");
         }
 
-        $file = PROJECT_ROOT . '/' . $configuration['file'] ?: '';
+        $file = PROJECT_ROOT . '/' . $configuration['file'];
         $migrateFile = realpath(PROJECT_ROOT . '/' . $configuration['migration']) ?: '';
 
         return new SQLiteConnection(
