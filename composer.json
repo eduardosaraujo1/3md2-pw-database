@@ -1,0 +1,9 @@
+{
+    "name": "rodaguj/pw-database",
+    "type": "project",
+    "require": {
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^2.1"
+    }
+}
