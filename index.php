@@ -3,17 +3,30 @@ require './app/autoload.php';
 
 use App\Controllers\AuthController;
 use App\Controllers\UserController;
-use App\Providers\Provider;
 use App\Repositories\UserRepository;
 use App\Services\AuthService;
-use App\Services\DatabaseService;
-use App\Services\Session;
 use App\Services\ImageStorageService;
 use App\Services\UserService;
+use Core\Config\DatabaseConfig;
 use Core\Container\Container;
+use Core\Database\MySQLConnection;
+use Core\Services\Session;
+use Core\Services\Database;
 
 // Service Container
 $container = Container::build(function (Container $container) {
+    $sessionService = new Session();
+
+    $migrationFile = __DIR__ . '/database/migrations/mysql.sql';
+    $config = new DatabaseConfig(__DIR__ . '/config/database.php');
+    $connection = new MySQLConnection(
+        config: $config,
+        migrateFile: $migrationFile,
+    );
+    $databaseService = new Database(
+        connection: $connection
+    );
+
     $oneHundredMB = 100 * 1024; // in kilobytes
     $allowedTypes = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
     $imageStorageService = new ImageStorageService(
@@ -21,10 +34,9 @@ $container = Container::build(function (Container $container) {
         maxFileSize: $oneHundredMB, // 100 MB max file size
     );
 
-    $sessionService = new Session();
-    $databaseService = new DatabaseService();
-
-    $userRepository = new UserRepository($databaseService);
+    $userRepository = new UserRepository(
+        databaseService: $databaseService
+    );
     $authService = new AuthService(
         userRepository: $userRepository,
         sessionService: $sessionService,
@@ -34,6 +46,7 @@ $container = Container::build(function (Container $container) {
         userRepository: $userRepository,
         sessionService: $sessionService
     );
+
     $authController = new AuthController(
         authService: $authService
     );
@@ -44,7 +57,7 @@ $container = Container::build(function (Container $container) {
 
     $container->singleton(Session::class, $sessionService);
     $container->singleton(ImageStorageService::class, $imageStorageService);
-    $container->singleton(DatabaseService::class, $databaseService);
+    $container->singleton(Database::class, $databaseService);
     $container->singleton(UserRepository::class, $userRepository);
     $container->singleton(AuthService::class, $authService);
     $container->singleton(UserService::class, $userService);

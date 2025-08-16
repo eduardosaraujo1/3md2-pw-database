@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\DTO\UserRegisterDTO;
+use App\Domain\DTO\UserRegisterDTO;
 use App\Services\AuthService;
 use App\Services\UserService;
 use Core\Http\Response;

@@ -2,10 +2,11 @@
 
 namespace App\Services;
 
-use App\DTO\LoginDTO;
-use App\DTO\UserRegisterDTO;
+use App\Domain\DTO\LoginDTO;
+use App\Domain\DTO\UserRegisterDTO;
 use App\Models\User;
 use App\Repositories\UserRepository;
+use Core\Services\Session;
 
 class AuthService
 {

@@ -3,14 +3,14 @@
 namespace App\Repositories;
 
 use App\Models\User;
-use Core\Database\DatabaseService; // Ensure this is the correct namespace for DatabaseService
+use Core\Services\Database;
 
 class UserRepository
 {
     public string $table = 'tb_contato';
 
     public function __construct(
-        public DatabaseService $databaseService
+        public Database $databaseService
     ) {
     }
 

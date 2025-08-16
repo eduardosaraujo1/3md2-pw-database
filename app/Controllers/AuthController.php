@@ -2,11 +2,9 @@
 
 namespace App\Controllers;
 
-use App\DTO\LoginDTO;
-use App\DTO\UserRegisterDTO;
-use App\Helpers\Response;
-use App\Providers\Provider;
+use App\Domain\DTO\LoginDTO;
 use App\Services\AuthService;
+use Core\Http\Response;
 
 class AuthController
 {
