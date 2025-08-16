@@ -1,15 +1,25 @@
 <?php
-require __DIR__ . '/Controllers/AuthController.php';
-require __DIR__ . '/Controllers/UserController.php';
-require __DIR__ . '/Helpers/Response.php';
-require __DIR__ . '/Helpers/Result.php';
-require __DIR__ . '/Models/User.php';
-require __DIR__ . '/Repositories/UserRepository.php';
-require __DIR__ . '/Services/AuthService.php';
-require __DIR__ . '/Services/UserService.php';
-require __DIR__ . '/Services/DatabaseService.php';
-require __DIR__ . '/Services/SessionService.php';
-require __DIR__ . '/Services/ImageStorageService.php';
-require __DIR__ . '/DTO/UserRegisterDTO.php';
-require __DIR__ . '/DTO/SignInCredentialsDTO.php';
-require __DIR__ . '/Providers/Provider.php';
+spl_autoload_register(function ($class) {
+    $project_root = realpath(__DIR__ . '/..');
+    $psr4 = [
+        "App\\" => "app/",
+        // "Core\\" => "core/",
+    ];
+
+    foreach ($psr4 as $prefix => $baseDir) {
+        // Verificar se a classe pertence ao namespace
+        if (strpos($class, $prefix) !== 0) {
+            continue;
+        }
+
+        // $relativeClass formato: Controllers\AuthController
+        $relativeClass = substr($class, strlen($prefix));
+        $relativePath = $baseDir . str_replace('\\', '/', $relativeClass) . '.php';
+        $file = "$project_root/$relativePath";
+
+        if (file_exists($file)) {
+            require_once $file;
+        }
+        return;
+    }
+});
