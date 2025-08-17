@@ -92,11 +92,26 @@ class FormController {
     }
 }
 
+/**
+ * A class for validating input values based on a set of rules.
+ */
 class Validator {
+    /**
+     * Creates an instance of Validator.
+     * @param {Object<string, function>} rules - An object where each key is a field name and each value is a validation function.
+     * The validation function takes two arguments: the value of the field and the entire set of values, and returns an error message
+     * if the validation fails, or `null`/`undefined` if it passes.
+     */
     constructor(rules) {
         this.rules = rules;
     }
 
+    /**
+     * Validates the provided values against the defined rules.
+     * @param {Object<string, any>} values - An object containing field names as keys and their corresponding values to validate.
+     * @returns {Object<string, string>} An object containing validation errors, where each key is a field name and the value is the error message.
+     * If no errors are found, the object will be empty.
+     */
     validate(values) {
         const errors = {};
 

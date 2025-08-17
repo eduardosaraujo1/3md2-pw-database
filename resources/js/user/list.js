@@ -1,7 +1,20 @@
 /// <reference path="../lib/jquery.js" />
 /// <reference path="../shared.js" />
 
+/**
+ * @typedef {Object} User
+ * @property {number} id
+ * @property {string} nome
+ * @property {string} login
+ * @property {string} email
+ * @property {string} telefone
+ */
+
 class UserRepository {
+    /**
+     * Fetch all users from the server.
+     * @returns {Promise<User[]>}
+     */
     async fetchUsers() {
         const response = await sendFormData({
             endpoint: "/users",
@@ -26,7 +39,7 @@ class UserTableController {
     }
 
     /**
-     * @param {Array} users
+     * @param {User[]} users
      */
     renderTable(users) {
         const tbody = this.tableElement.find("tbody");
@@ -38,6 +51,11 @@ class UserTableController {
         });
     }
 
+    /**
+     * Gera o HTML para uma linha da tabela de usuários.
+     * @param {User} user
+     * @returns {string}
+     */
     generateRowHTML(user) {
         return `
             <tr>
