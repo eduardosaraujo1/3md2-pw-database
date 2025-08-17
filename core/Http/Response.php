@@ -27,19 +27,23 @@ class Response
         echo $this->body ?? "";
     }
 
-    public function redirect(string $location, int $statusCode = 302): void
+    public function redirect(string $location, int $statusCode = 302): self
     {
         $this->status = $statusCode;
         $this->header('Location', $location);
+
+        return $this;
     }
 
-    public function json($data): void
+    public function json($data): self
     {
         $this->header('Content-Type', 'application/json');
         $this->body = json_encode($data, JSON_UNESCAPED_UNICODE);
+
+        return $this;
     }
 
-    public function view(string $path, int $code = 200): void
+    public function view(string $path, int $code = 200): self
     {
         $this->status = $code;
         $viewPath = realpath(PROJECT_ROOT . "/resources/views/$path.html");
@@ -51,5 +55,7 @@ class Response
         } else {
             $this->body = '<h1>Error: View not found</h1>';
         }
+
+        return $this;
     }
 }

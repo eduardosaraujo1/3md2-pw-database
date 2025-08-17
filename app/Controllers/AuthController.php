@@ -17,9 +17,9 @@ class AuthController
     public function login()
     {
         if ($this->authService->isSignedIn()) {
-            response()->redirect('/');
+            return response()->redirect('/');
         } else {
-            response()->view("login");
+            return response()->view("login");
         }
     }
 
@@ -50,13 +50,13 @@ class AuthController
 
             return response()->json(['status' => 'success', 'user' => $user]);
         } catch (\Exception $e) {
-            response()->json(['status' => 'error', 'message' => $e->getMessage()]);
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
         }
     }
 
     public function signOut()
     {
         $this->authService->signOut();
-        response()->redirect('/');
+        return response()->redirect('/');
     }
 }

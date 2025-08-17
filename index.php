@@ -22,44 +22,44 @@ $router = [
     // Auth
     '/login' => function (Request $request) use ($authController) {
         if ($request->method() === 'GET') {
-            $authController->login();
+            return $authController->login();
         }
     },
     '/signin' => function (Request $request) use ($authController) {
         if ($request->method() === 'POST') {
-            $authController->signin($request);
+            return $authController->signin($request);
         }
     },
     '/signout' => function (Request $request) use ($authController) {
         if ($request->method() === 'GET') {
-            $authController->signout();
+            return $authController->signout();
         }
     },
     // User
     '/' => function (Request $request) use ($userController) {
         if ($request->method() === 'GET') {
-            $userController->home();
+            return $userController->home();
         }
     },
     '/users' => function (Request $request) use ($userController) {
         if ($request->method() === 'GET') {
-            $userController->index();
+            return $userController->index();
         }
     },
     '/users/store' => function (Request $request) use ($userController) {
         if ($request->method() === 'POST') {
-            $userController->store($request);
+            return $userController->store($request);
         }
     },
     // Deprecated
     '/profile' => function (Request $request) use ($userController) {
         if ($request->method() === 'POST') {
-            $userController->getProfile();
+            return $userController->getProfile();
         }
     },
     '/profile/update' => function (Request $request) use ($userController) {
         if ($request->method() === 'POST') {
-            $userController->updateProfile($request);
+            return $userController->updateProfile($request);
         }
     },
 ];
