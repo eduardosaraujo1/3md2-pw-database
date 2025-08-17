@@ -55,13 +55,12 @@ Ao submeter o formulário:
 ## ️Estrutura do Banco de Dados
 
 ```sql
-DROP SCHEMA IF EXISTS pw_atividade;
-CREATE SCHEMA IF NOT EXISTS pw_atividade;
+DROP SCHEMA IF EXISTS learning;
+CREATE SCHEMA IF NOT EXISTS learning;
+USE learning;
 
-USE pw_atividade;
-
-CREATE TABLE tb_contato (
-    id INT PRIMARY KEY AUTO_INCREMENT,
+CREATE TABLE IF NOT EXISTS tb_contato(
+    id int primary key auto_increment,
     nome VARCHAR(255) NOT NULL,
     login VARCHAR(255) NOT NULL UNIQUE,
     senha VARCHAR(255) NOT NULL,
@@ -70,11 +69,9 @@ CREATE TABLE tb_contato (
     foto VARCHAR(255)
 );
 
-INSERT INTO tb_usuario (login, email, senha) VALUES
-('didi', 'didi@gmail.com', '1234');
+INSERT INTO tb_contato VALUES (NULL, "Admin", "admin", "$2a$12$IYe6qvlevtzmCxu4zjkIIuLmrPMIvBwmhl3YApHE7fuxI9cadkesW", 'admin@gmail.com', '11951490211', NULL); -- Senha: admin
 ```
 
 # Roadmap
 
--   [ ] Criar classes app/Services/Connections/MySQLConnection e app/Services/Connections/SQLiteConnection para melhorar execução em ambientes não MySQL (dependency injection em DatabaseService)
 -   [ ] Endpoints para editar e excluir usuários
