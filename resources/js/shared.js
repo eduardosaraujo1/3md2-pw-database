@@ -23,10 +23,17 @@ class FormController {
     }
 
     pullFromDOM() {
-        this.inputIds.forEach((id, index) => {
+        this.inputIds.forEach((id) => {
             const field = $(`input#${id}`);
-            // Suporte para campo de arquivo
-            this.state[id] = id === "foto" ? field.prop("files")?.[0] : field.val() ?? "";
+            let value;
+
+            if (field.attr("type") === "file") {
+                value = field.prop("files")?.[0] || null;
+            } else {
+                value = field.val() ?? "";
+            }
+
+            this.state[id] = value;
         });
     }
 
@@ -106,23 +113,33 @@ class Validator {
     }
 }
 
+/**
+ * Sends form data to a specified endpoint using an AJAX request.
+ *
+ * @param {Object} params - The parameters for the request.
+ * @param {string} params.endpoint - The URL endpoint to send the request to.
+ * @param {string} [params.method="POST"] - The HTTP method to use for the request (default is "POST").
+ * @param {FormData} params.formData - The FormData object containing the data to be sent.
+ * @returns {Promise<Object>} A promise that resolves with the JSON response or rejects with the jQuery.jqXHR object.
+ */
 async function sendFormData({ endpoint, method = "POST", formData }) {
     return new Promise((resolve, reject) => {
         $.ajax({
             url: endpoint,
             method: method,
             data: formData,
+            dataType: "json",
             contentType: false,
             processData: false,
             xhrFields: {
                 withCredentials: true,
             },
             success: function (response) {
-                resolve(response);
+                resolve(response); // Resolves with JSON response
             },
             /** @param {jQuery.jqXHR} xhr */
             error: function (xhr) {
-                reject(xhr);
+                reject(xhr); // Rejects with jQuery.jqXHR object
             },
         });
     });

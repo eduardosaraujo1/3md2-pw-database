@@ -132,14 +132,15 @@ $(() => {
         formController.clear();
         refreshForm();
     });
-});
 
-// Testes
-function fillForm() {
-    document.querySelector("#nome").value = "Teste";
-    document.querySelector("#login").value = "teste" + Math.floor(Math.random() * 1000);
-    document.querySelector("#email").value = "teste" + Math.floor(Math.random() * 1000) + "@teste.com";
-    document.querySelector("#telefone").value = "11987654321";
-    document.querySelector("#senha").value = "Senha123!";
-    document.querySelector("#confirmSenha").value = "Senha123!";
-}
+    window.fillForm = function () {
+        $("#nome").val("Teste");
+        $("#login").val("teste" + Math.floor(Math.random() * 1000));
+        $("#email").val("teste" + Math.floor(Math.random() * 1000) + "@teste.com");
+        $("#telefone").val("11987654321");
+        $("#senha").val("Senha123!");
+        $("#confirmSenha").val("Senha123!");
+
+        refreshForm();
+    };
+});
