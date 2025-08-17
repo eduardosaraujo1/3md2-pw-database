@@ -12,16 +12,6 @@ class Container
 
     private function __construct()
     {
-        $providers = config("providers") ?? [];
-        array_unshift($providers, CoreServiceProvider::class);
-
-        foreach ($providers as $provider) {
-            $this->registerProvider($provider);
-        }
-
-        foreach ($providers as $provider) {
-            $this->bootProvider($provider);
-        }
     }
 
     public static function getInstance(): self
@@ -30,6 +20,23 @@ class Container
             self::$instance = new self();
         }
         return self::$instance;
+    }
+
+    public function bootstrap()
+    {
+        // get service provider list from config
+        $providers = config("providers") ?? [];
+        array_unshift($providers, CoreServiceProvider::class);
+
+        // register all providers
+        foreach ($providers as $provider) {
+            $this->registerProvider($provider);
+        }
+
+        // then boot all providers
+        foreach ($providers as $provider) {
+            $this->bootProvider($provider);
+        }
     }
 
     private function registerProvider(string $provider): void

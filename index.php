@@ -7,6 +7,9 @@ use App\Controllers\AuthController;
 use App\Controllers\UserController;
 use Core\Http\Request;
 
+// Bootstrap app service providers
+app()->bootstrap();
+
 // Request
 $request = app()->make(Request::class);
 
