@@ -18,7 +18,7 @@ class UserController
         public AuthService $authService
     ) {
     }
-    public function home()
+    public function home(): Response
     {
         if ($this->authService->isSignedIn()) {
             return response()->view("home");
@@ -46,7 +46,7 @@ class UserController
         }
     }
 
-    public function store(Request $request)
+    public function store(Request $request): Response
     {
         try {
             // Form validation
@@ -71,14 +71,14 @@ class UserController
 
             $user = $this->userService->createUser($userDTO) ?? [];
 
-            response()->json(['status' => 'success', 'user' => $user]);
+            return response()->json(['status' => 'success', 'user' => $user]);
         } catch (Exception $e) {
-            response()->json(['status' => 'error', 'message' => $e->getMessage()]);
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
         }
     }
 
     // Descontinuado
-    public function getProfile()
+    public function getProfile(): Response
     {
         try {
             $user = $this->userService->getCurrentUser();
@@ -94,7 +94,7 @@ class UserController
     }
 
 
-    public function updateProfile(Request $request)
+    public function updateProfile(Request $request): Response
     {
         try {
             $data = $request->all();

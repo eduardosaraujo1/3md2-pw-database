@@ -14,7 +14,7 @@ class AuthController
 
     ) {
     }
-    public function login()
+    public function login(): Response
     {
         if ($this->authService->isSignedIn()) {
             return response()->redirect('/');
@@ -23,7 +23,7 @@ class AuthController
         }
     }
 
-    public function signIn(Request $request)
+    public function signIn(Request $request): Response
     {
         try {
             // Form validation
@@ -54,9 +54,10 @@ class AuthController
         }
     }
 
-    public function signOut()
+    public function signOut(): Response
     {
         $this->authService->signOut();
+
         return response()->redirect('/');
     }
 }
