@@ -2,20 +2,54 @@
 
 namespace Core\Container;
 
+use Core\Providers\CoreServiceProvider;
+
 
 class Container
 {
     private array $bindings = [];
     private static ?self $instance = null;
 
-    private function __construct() {}
+    private function __construct()
+    {
+        $providers = config("providers") ?? [];
+        array_unshift($providers, CoreServiceProvider::class);
 
-    public static function app(): self
+        foreach ($providers as $provider) {
+            $this->registerProvider($provider);
+        }
+
+        foreach ($providers as $provider) {
+            $this->bootProvider($provider);
+        }
+    }
+
+    public static function getInstance(): self
     {
         if (self::$instance === null) {
             self::$instance = new self();
         }
         return self::$instance;
+    }
+
+    private function registerProvider(string $provider): void
+    {
+        if (!class_exists($provider)) {
+            throw new \InvalidArgumentException("Provider class '{$provider}' not found.");
+        }
+
+        $providerInstance = new $provider($this);
+        $providerInstance->register();
+    }
+
+    private function bootProvider(string $provider): void
+    {
+        if (!class_exists($provider)) {
+            throw new \InvalidArgumentException("Provider class '{$provider}' not found.");
+        }
+
+        $providerInstance = new $provider($this);
+        $providerInstance->boot();
     }
 
     public function bind(string $abstract, callable $factory): void

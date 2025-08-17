@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Providers;
+namespace Core\Providers;
 
 use Core\Container\Container;
 
@@ -8,7 +8,8 @@ abstract class Provider
 {
     public function __construct(
         protected Container $app
-    ) {}
+    ) {
+    }
 
     abstract public function register();
 

@@ -6,33 +6,18 @@ use App\Repositories\UserRepository;
 use App\Services\AuthService;
 use App\Services\ImageStorageService;
 use App\Services\UserService;
-use Core\Database\MySQLConnection;
-use Core\Database\SQLiteConnection;
+use Core\Providers\Provider;
 use Core\Services\Session;
 use Core\Services\Database;
 use Core\Services\Storage;
 use Core\Container\Container;
 use App\Controllers\AuthController;
 use App\Controllers\UserController;
-use Core\Database\Connection;
-use Core\Http\Request;
 
 class AppServiceProvider extends Provider
 {
     public function register()
     {
-        $this->app->singleton(Session::class, function () {
-            return new Session();
-        });
-
-        $this->app->singleton(Request::class, function () {
-            return Request::createFromGlobals();
-        });
-
-        $this->app->singleton(Storage::class, function () {
-            return new Storage();
-        });
-
         $this->app->singleton(ImageStorageService::class, function (Container $container) {
             $storage = $container->make(Storage::class);
             $allowedTypes = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
@@ -43,26 +28,6 @@ class AppServiceProvider extends Provider
                 allowedTypes: $allowedTypes,
                 maxFileSize: $oneHundredMB,
             );
-        });
-
-        $this->app->singleton(Connection::class, function () {
-            $dbConfig = config('database');
-            $dbDriver = $dbConfig['default'];
-            $config = $dbConfig[$dbDriver];
-
-            $connection = match ($dbDriver) {
-                'sqlite' => SQLiteConnection::fromConfig(config: $config),
-                'mysql' => MySQLConnection::fromConfig(config: $config),
-                default => throw new \InvalidArgumentException("Unsupported database driver: {$dbDriver}"),
-            };
-
-            return $connection;
-        });
-
-        $this->app->singleton(Database::class, function (Container $container) {
-            $connection = $container->make(Connection::class);
-
-            return new Database(connection: $connection);
         });
 
         $this->app->singleton(UserRepository::class, function (Container $container) {

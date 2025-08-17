@@ -1,28 +1,20 @@
 <?php
 define('PROJECT_ROOT', __DIR__);
-require 'core/functions.php';
 require 'core/autoload.php';
+require 'core/functions.php';
 
 use App\Controllers\AuthController;
 use App\Controllers\UserController;
-use App\Providers\AppServiceProvider;
 use Core\Http\Request;
-use Core\Container\Container;
-
-// Service Container
-$container = Container::app();
-$provider = new AppServiceProvider($container);
-$provider->register();
-$provider->boot();
 
 // Request
-$request = $container->make(Request::class);
+$request = app()->make(Request::class);
 
 // Router
 /** @var AuthController */
-$authController = $container->make(AuthController::class);
+$authController = app()->make(AuthController::class);
 /** @var UserController */
-$userController = $container->make(UserController::class);
+$userController = app()->make(UserController::class);
 
 $uri = $_SERVER['REQUEST_URI'];
 $method = $request->method();

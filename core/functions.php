@@ -48,3 +48,10 @@ if (!function_exists('config')) {
         return $config[$file];
     }
 }
+
+if (!function_exists('app')) {
+    function app(): \Core\Container\Container
+    {
+        return \Core\Container\Container::getInstance();
+    }
+}
