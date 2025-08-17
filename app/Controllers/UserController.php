@@ -59,6 +59,12 @@ class UserController
                 }
             }
 
+            // Validate 'foto' field (must be nullable array)
+            if (isset($dados['foto']) && !is_array($dados['foto'])) {
+                // throw new Exception("O campo 'foto' deve ser um array ou nulo.");
+                $dados['foto'] = null;
+            }
+
             // Logic
             $userDTO = new UserRegisterDTO(
                 nome: $dados['nome'],
