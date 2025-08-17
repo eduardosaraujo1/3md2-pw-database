@@ -4,36 +4,52 @@ namespace Core\Http;
 
 class Response
 {
-    public static function json($data)
-    {
-        header('Content-Type: application/json');
-        echo json_encode($data, JSON_UNESCAPED_UNICODE);
-        die();
+    public function __construct(
+        private string $body = '',
+        private int $status = 200,
+        private array $headers = [],
+    ) {
     }
 
-    public static function error(string $message, int $code = 400)
+    public function header(string $key, string $value): void
     {
-        http_response_code($code);
-        self::json(["error" => $message]);
-        die();
+        $this->headers[$key] = $value;
     }
 
-    public static function view(string $path, int $code = 200)
+    public function send(): void
     {
-        http_response_code($code);
-        $path = realpath(PROJECT_ROOT . "/resources/views/$path.html");
-        if ($path) {
-            require $path;
-        } else {
-            echo '<h1>Erro: HTML da rota não encontrado</h1>';
+        http_response_code($this->status ?? 500);
+
+        foreach ($this->headers as $key => $value) {
+            header("$key: $value");
         }
-        die();
+
+        echo $this->body ?? "";
     }
 
-    public static function redirect(string $location, int $statusCode = 302): void
+    public function redirect(string $location, int $statusCode = 302): void
     {
-        http_response_code($statusCode);
-        header("Location: $location");
-        die();
+        $this->status = $statusCode;
+        $this->header('Location', $location);
+    }
+
+    public function json($data): void
+    {
+        $this->header('Content-Type', 'application/json');
+        $this->body = json_encode($data, JSON_UNESCAPED_UNICODE);
+    }
+
+    public function view(string $path, int $code = 200): void
+    {
+        $this->status = $code;
+        $viewPath = realpath(PROJECT_ROOT . "/resources/views/$path.html");
+
+        if ($viewPath && file_exists($viewPath)) {
+            ob_start();
+            require $viewPath;
+            $this->body = ob_get_clean() ?: '<h1>Error: View not found</h1>';
+        } else {
+            $this->body = '<h1>Error: View not found</h1>';
+        }
     }
 }

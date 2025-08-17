@@ -21,9 +21,9 @@ class UserController
     public function home()
     {
         if ($this->authService->isSignedIn()) {
-            Response::view("home");
+            response()->view("home");
         } else {
-            Response::redirect('/login');
+            response()->redirect('/login');
         }
     }
 
@@ -40,9 +40,9 @@ class UserController
                     'telefone' => $user->telefone,
                 ];
             }, $users);
-            Response::json($filtered);
+            response()->json($filtered);
         } catch (Exception $e) {
-            Response::error($e->getMessage());
+            response()->json(['status' => 'error', 'message' => $e->getMessage()]);
         }
     }
 
@@ -71,9 +71,9 @@ class UserController
 
             $user = $this->userService->createUser($userDTO) ?? [];
 
-            Response::json(['status' => 'success', 'user' => $user]);
+            response()->json(['status' => 'success', 'user' => $user]);
         } catch (Exception $e) {
-            Response::error($e->getMessage());
+            response()->json(['status' => 'error', 'message' => $e->getMessage()]);
         }
     }
 
@@ -87,9 +87,9 @@ class UserController
                 throw new Exception("Usuário não autenticado");
             }
 
-            Response::json($user);
+            response()->json($user);
         } catch (Exception $e) {
-            Response::error($e->getMessage());
+            response()->json(['status' => 'error', 'message' => $e->getMessage()]);
         }
     }
 
@@ -122,10 +122,10 @@ class UserController
 
             $updatedUser = $this->userService->updateUser($user->id, $userUpdateDTO);
 
-            Response::json(['status' => 'success', 'user' => $updatedUser]);
+            response()->json(['status' => 'success', 'user' => $updatedUser]);
 
         } catch (Exception $e) {
-            Response::error($e->getMessage());
+            response()->json(['status' => 'error', 'message' => $e->getMessage()]);
         }
     }
 }

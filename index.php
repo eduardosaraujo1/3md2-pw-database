@@ -1,4 +1,6 @@
 <?php
+
+use Core\Http\Kernel;
 define('PROJECT_ROOT', __DIR__);
 require 'core/autoload.php';
 require 'core/functions.php';
@@ -10,69 +12,64 @@ use Core\Http\Request;
 // Bootstrap app service providers
 app()->bootstrap();
 
-// Request
-$request = app()->make(Request::class);
-
 // Router
 /** @var AuthController */
 $authController = app()->make(AuthController::class);
 /** @var UserController */
 $userController = app()->make(UserController::class);
 
-$uri = $_SERVER['REQUEST_URI'];
-$method = $request->method();
 $router = [
     // Auth
-    '/login' => function () use ($authController, $request) {
+    '/login' => function (Request $request) use ($authController) {
         if ($request->method() === 'GET') {
             $authController->login();
         }
     },
-    '/signin' => function () use ($authController, $request) {
+    '/signin' => function (Request $request) use ($authController) {
         if ($request->method() === 'POST') {
             $authController->signin($request);
         }
     },
-    '/signout' => function () use ($authController, $request) {
+    '/signout' => function (Request $request) use ($authController) {
         if ($request->method() === 'GET') {
             $authController->signout();
         }
     },
     // User
-    '/' => function () use ($userController, $request) {
+    '/' => function (Request $request) use ($userController) {
         if ($request->method() === 'GET') {
             $userController->home();
         }
     },
-    '/users' => function () use ($userController, $request) {
+    '/users' => function (Request $request) use ($userController) {
         if ($request->method() === 'GET') {
             $userController->index();
         }
     },
-    '/users/store' => function () use ($userController, $request) {
+    '/users/store' => function (Request $request) use ($userController) {
         if ($request->method() === 'POST') {
             $userController->store($request);
         }
     },
     // Deprecated
-    '/profile' => function () use ($userController, $request) {
+    '/profile' => function (Request $request) use ($userController) {
         if ($request->method() === 'POST') {
             $userController->getProfile();
         }
     },
-    '/profile/update' => function () use ($userController, $request) {
+    '/profile/update' => function (Request $request) use ($userController) {
         if ($request->method() === 'POST') {
             $userController->updateProfile($request);
         }
     },
 ];
 
-if (!array_key_exists($uri, $router)) {
-    echo "<h1>Esse caminho não existe</h1>";
-    die();
-}
+// Request
+$request = app()->make(Request::class);
 
-$callback = $router[$uri];
-$response = $callback($request);
+// Kernel
+$kernel = new Kernel($router);
+$response = $kernel->handle($request);
 
-// End Router
+// Respond
+$response->send();

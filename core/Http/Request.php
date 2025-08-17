@@ -43,4 +43,9 @@ class Request
     {
         return $this->server['REQUEST_METHOD'] ?? 'GET';
     }
+
+    public function uri()
+    {
+        return $this->server['REQUEST_URI'] ?? '/';
+    }
 }

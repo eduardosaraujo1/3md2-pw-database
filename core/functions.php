@@ -55,3 +55,10 @@ if (!function_exists('app')) {
         return \Core\Container\Container::getInstance();
     }
 }
+
+if (!function_exists('response')) {
+    function response(string $body = '', int $status = 200, array $headers = []): \Core\Http\Response
+    {
+        return new \Core\Http\Response($body, $status, $headers);
+    }
+}

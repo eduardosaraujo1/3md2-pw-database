@@ -17,9 +17,9 @@ class AuthController
     public function login()
     {
         if ($this->authService->isSignedIn()) {
-            Response::redirect('/');
+            response()->redirect('/');
         } else {
-            Response::view("login");
+            response()->view("login");
         }
     }
 
@@ -48,15 +48,15 @@ class AuthController
                 throw new \Exception("Usuário ou senha incorretos");
             }
 
-            return Response::json(['status' => 'success', 'user' => $user]);
+            return response()->json(['status' => 'success', 'user' => $user]);
         } catch (\Exception $e) {
-            Response::error($e->getMessage());
+            response()->json(['status' => 'error', 'message' => $e->getMessage()]);
         }
     }
 
     public function signOut()
     {
         $this->authService->signOut();
-        Response::redirect('/');
+        response()->redirect('/');
     }
 }
