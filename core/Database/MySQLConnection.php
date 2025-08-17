@@ -33,7 +33,8 @@ class MySQLConnection implements Connection
 
     public static function fromConfig(array $config): MySQLConnection
     {
-        $connection = $config['connection'] ?? [];
+        $mysql = $config['mysql'] ?? [];
+        $connection = $mysql['connection'] ?? [];
         if (
             !isset(
             $connection['host'],
@@ -41,13 +42,13 @@ class MySQLConnection implements Connection
             $connection['password'],
             $connection['database'],
             $connection['port'],
-            $config['migration'],
+            $mysql['migration'],
         )
         ) {
             throw new \InvalidArgumentException("Configuration array is missing required keys.");
         }
 
-        $migrateFile = realpath(PROJECT_ROOT . '/' . $config['migration']) ?: '';
+        $migrateFile = realpath(PROJECT_ROOT . '/' . $mysql['migration']) ?: '';
 
         return new MySQLConnection(
             host: $connection['host'],

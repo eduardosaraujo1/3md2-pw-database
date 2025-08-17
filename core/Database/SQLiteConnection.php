@@ -42,17 +42,18 @@ class SQLiteConnection implements Connection
 
     public static function fromConfig(array $config): SQLiteConnection
     {
+        $sqlite = $config['sqlite'] ?? [];
         if (
             !isset(
-            $config['file'],
-            $config['migration']
+            $sqlite['file'],
+            $sqlite['migration']
         )
         ) {
             throw new \InvalidArgumentException("Configuration array is missing required keys.");
         }
 
-        $file = PROJECT_ROOT . '/' . $config['file'];
-        $migrateFile = realpath(PROJECT_ROOT . '/' . $config['migration']) ?: '';
+        $file = PROJECT_ROOT . '/' . $sqlite['file'];
+        $migrateFile = realpath(PROJECT_ROOT . '/' . $sqlite['migration']) ?: '';
 
         return new SQLiteConnection(
             file: $file,
