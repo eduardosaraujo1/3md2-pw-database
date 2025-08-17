@@ -35,9 +35,10 @@ class Response
         return $this;
     }
 
-    public function json($data): self
+    public function json($data, int $code = 200): self
     {
         $this->header('Content-Type', 'application/json');
+        $this->status = $code;
         $this->body = json_encode($data, JSON_UNESCAPED_UNICODE);
 
         return $this;
