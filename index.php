@@ -3,77 +3,20 @@ require './app/autoload.php';
 
 use App\Controllers\AuthController;
 use App\Controllers\UserController;
-use App\Repositories\UserRepository;
-use App\Services\AuthService;
-use App\Services\ImageStorageService;
-use App\Services\UserService;
-use Core\Config\Configuration;
-use Core\Container\Container;
-use Core\Database\MySQLConnection;
-use Core\Database\SQLiteConnection;
+use App\Providers\AppServiceProvider;
 use Core\Http\Request;
-use Core\Services\Session;
-use Core\Services\Database;
-use Core\Services\Storage;
+use Core\Container\Container;
 
 define('PROJECT_ROOT', __DIR__);
 
 // Service Container
-$container = Container::build(function (Container $container) {
-    $connectionConfig = new Configuration("database");
-    $db_driver = $connectionConfig->get()['default'];
-    $connection = match ($db_driver) {
-        'sqlite' => SQLiteConnection::fromConfig(config: $connectionConfig),
-        'mysql' => MySQLConnection::fromConfig(config: $connectionConfig),
-        default => throw new InvalidArgumentException("Unsupported database driver: $db_driver"),
-    };
-    $databaseService = new Database(
-        connection: $connection
-    );
-
-    $storageService = new Storage();
-    $oneHundredMB = 100 * 1024; // in kilobytes
-    $allowedTypes = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-    $imageStorageService = new ImageStorageService(
-        storage: $storageService,
-        allowedTypes: $allowedTypes,
-        maxFileSize: $oneHundredMB,
-    );
-
-    $sessionService = new Session();
-    $userRepository = new UserRepository(
-        databaseService: $databaseService
-    );
-    $authService = new AuthService(
-        userRepository: $userRepository,
-        sessionService: $sessionService,
-    );
-    $userService = new UserService(
-        userRepository: $userRepository,
-        sessionService: $sessionService,
-        imageStorageService: $imageStorageService
-    );
-
-    $authController = new AuthController(
-        authService: $authService
-    );
-    $userController = new UserController(
-        userService: $userService,
-        authService: $authService
-    );
-
-    $container->singleton(Session::class, $sessionService);
-    $container->singleton(ImageStorageService::class, $imageStorageService);
-    $container->singleton(Database::class, $databaseService);
-    $container->singleton(UserRepository::class, $userRepository);
-    $container->singleton(AuthService::class, $authService);
-    $container->singleton(UserService::class, $userService);
-    $container->singleton(AuthController::class, $authController);
-    $container->singleton(UserController::class, $userController);
-});
+$container = Container::app();
+$provider = new AppServiceProvider($container);
+$provider->register();
+$provider->boot();
 
 // Request
-$request = Request::createFromGlobals();
+$request = $container->make(Request::class);
 
 // Router
 /** @var AuthController */

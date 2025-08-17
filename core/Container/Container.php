@@ -2,15 +2,20 @@
 
 namespace Core\Container;
 
+
 class Container
 {
     private array $bindings = [];
+    private static ?self $instance = null;
 
-    public static function build(callable $callable): self
+    private function __construct() {}
+
+    public static function app(): self
     {
-        $container = new self();
-        $callable($container);
-        return $container;
+        if (self::$instance === null) {
+            self::$instance = new self();
+        }
+        return self::$instance;
     }
 
     public function bind(string $abstract, callable $factory): void
@@ -20,15 +25,19 @@ class Container
         ];
     }
 
-    public function singleton(string $abstract, object $concrete): void
+    public function singleton(string $abstract, callable $factory): void
     {
+        // Eager generate singleton
+        $concrete = $factory($this);
+
+        // Static factory that returns constant instance
         $this->bind($abstract, fn() => $concrete);
     }
 
     public function make(string $abstract): object
     {
         if (!isset($this->bindings[$abstract])) {
-            throw new \Exception("No binding found for {$abstract}");
+            throw new \Exception("No binding found for {$abstract}. Please create one in AppServiceProvider.php");
         }
 
         $binding = $this->bindings[$abstract];

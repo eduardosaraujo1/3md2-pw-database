@@ -10,7 +10,7 @@ class Storage
 
     public function __construct(string $storageDir = '/storage')
     {
-        $this->storageDir = $_SERVER['DOCUMENT_ROOT'] . $storageDir;
+        $this->storageDir = PROJECT_ROOT . $storageDir;
         $this->ensureStorageDirectoryExists();
     }
 
