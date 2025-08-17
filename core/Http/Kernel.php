@@ -2,34 +2,32 @@
 
 namespace Core\Http;
 
+use Core\Routing\Router;
+
 class Kernel
 {
-    public function __construct(private array $router)
+    public function __construct(private Router $router)
     {
     }
-    public function handle(Request $request)
+    public function handle(Request $request): Response
     {
         $uri = $request->uri();
+        $method = $request->method();
 
-        if (!array_key_exists($uri, $this->router)) {
-            return $this->notFound();
-        }
-
-        $callback = $this->router[$uri];
+        $callback = $this->router->handle(
+            method: $method,
+            uri: $uri
+        );
         $processed = $callback($request);
 
         if ($processed instanceof Response) {
+            error_log("Route callback failed to return a Response object.");
             return $processed;
         }
 
-        throw new \RuntimeException('Unexpected response type');
-    }
-
-    private function notFound()
-    {
-        return response(
-            body: "<h1>404 Not Found</h1>",
-            status: 404
+        return response()->json(
+            data: ['status' => 'error', 'message' => '500 Internal Server Error'],
+            code: 404
         );
     }
 }

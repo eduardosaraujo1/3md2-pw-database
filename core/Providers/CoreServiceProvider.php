@@ -6,8 +6,10 @@ use Core\Container\Container;
 use Core\Database\Connection;
 use Core\Database\MySQLConnection;
 use Core\Database\SQLiteConnection;
+use Core\Http\Kernel;
 use Core\Http\Request;
 use Core\Http\Response;
+use Core\Routing\Router;
 use Core\Services\Database;
 use Core\Services\Session;
 use Core\Services\Storage;
@@ -25,6 +27,17 @@ class CoreServiceProvider extends Provider
             return new Response();
         });
 
+        $this->app->singleton(Router::class, function () {
+            return new Router();
+        });
+
+        $this->app->singleton(Kernel::class, function () {
+            $router = app()->make(Router::class);
+
+            return new Kernel($router);
+        });
+
+        // PHP Session
         $this->app->singleton(Session::class, function () {
             return new Session();
         });
