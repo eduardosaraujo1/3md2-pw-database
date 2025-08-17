@@ -1,0 +1,50 @@
+<?php
+
+if (!function_exists('dd')) {
+    function dd(...$vars)
+    {
+        foreach ($vars as $var) {
+            var_dump($var);
+        }
+        die();
+    }
+}
+
+if (!function_exists('dump')) {
+    function dump(...$vars)
+    {
+        foreach ($vars as $var) {
+            var_dump($var);
+        }
+    }
+}
+
+if (!function_exists('config')) {
+    function config(string $file): array
+    {
+        // The configuration is cached statically for performance.
+        static $config = [];
+
+        if (!defined('PROJECT_ROOT')) {
+            throw new \RuntimeException('PROJECT_ROOT is not defined.');
+        }
+
+        // Load the configuration file if not already loaded
+        if (!isset($config[$file])) {
+            $filePath = PROJECT_ROOT . "/config/{$file}.php";
+            if (!file_exists($filePath)) {
+                throw new \RuntimeException("Configuration file '{$file}.php' not found in config directory.");
+            }
+
+            $loadedConfig = require $filePath;
+
+            if (!is_array($loadedConfig)) {
+                throw new \RuntimeException("Configuration file '{$file}.php' must return an array.");
+            }
+
+            $config[$file] = $loadedConfig;
+        }
+
+        return $config[$file];
+    }
+}

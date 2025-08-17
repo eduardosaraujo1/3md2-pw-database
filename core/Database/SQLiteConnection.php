@@ -1,7 +1,6 @@
 <?php
-namespace Core\Database;
 
-use Core\Config\Configuration;
+namespace Core\Database;
 
 class SQLiteConnection implements Connection
 {
@@ -41,20 +40,19 @@ class SQLiteConnection implements Connection
         return $this->pdo;
     }
 
-    public static function fromConfig(Configuration $config)
+    public static function fromConfig(array $config): SQLiteConnection
     {
-        $configuration = $config->get()['sqlite'] ?? [];
         if (
             !isset(
-            $configuration['file'],
-            $configuration['migration']
+            $config['file'],
+            $config['migration']
         )
         ) {
             throw new \InvalidArgumentException("Configuration array is missing required keys.");
         }
 
-        $file = PROJECT_ROOT . '/' . $configuration['file'];
-        $migrateFile = realpath(PROJECT_ROOT . '/' . $configuration['migration']) ?: '';
+        $file = PROJECT_ROOT . '/' . $config['file'];
+        $migrateFile = realpath(PROJECT_ROOT . '/' . $config['migration']) ?: '';
 
         return new SQLiteConnection(
             file: $file,

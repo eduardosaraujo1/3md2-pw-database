@@ -1,7 +1,6 @@
 <?php
-namespace Core\Database;
 
-use Core\Config\Configuration;
+namespace Core\Database;
 
 class MySQLConnection implements Connection
 {
@@ -32,10 +31,9 @@ class MySQLConnection implements Connection
         $this->pdo->exec("USE `$database`");
     }
 
-    public static function fromConfig(Configuration $config): self
+    public static function fromConfig(array $config): MySQLConnection
     {
-        $configuration = $config->get()['mysql'] ?? [];
-        $connection = $configuration['connection'] ?? [];
+        $connection = $config['connection'] ?? [];
         if (
             !isset(
             $connection['host'],
@@ -43,13 +41,13 @@ class MySQLConnection implements Connection
             $connection['password'],
             $connection['database'],
             $connection['port'],
-            $configuration['migration'],
+            $config['migration'],
         )
         ) {
             throw new \InvalidArgumentException("Configuration array is missing required keys.");
         }
 
-        $migrateFile = realpath(PROJECT_ROOT . '/' . $configuration['migration']) ?: '';
+        $migrateFile = realpath(PROJECT_ROOT . '/' . $config['migration']) ?: '';
 
         return new MySQLConnection(
             host: $connection['host'],

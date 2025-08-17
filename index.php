@@ -1,13 +1,13 @@
 <?php
-require './app/autoload.php';
+define('PROJECT_ROOT', __DIR__);
+require 'core/functions.php';
+require 'core/autoload.php';
 
 use App\Controllers\AuthController;
 use App\Controllers\UserController;
 use App\Providers\AppServiceProvider;
 use Core\Http\Request;
 use Core\Container\Container;
-
-define('PROJECT_ROOT', __DIR__);
 
 // Service Container
 $container = Container::app();

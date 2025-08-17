@@ -6,7 +6,6 @@ use App\Repositories\UserRepository;
 use App\Services\AuthService;
 use App\Services\ImageStorageService;
 use App\Services\UserService;
-use Core\Config\Configuration;
 use Core\Database\MySQLConnection;
 use Core\Database\SQLiteConnection;
 use Core\Services\Session;
@@ -47,12 +46,14 @@ class AppServiceProvider extends Provider
         });
 
         $this->app->singleton(Connection::class, function () {
-            $dbConfig = new Configuration("database");
-            $dbDriver = $dbConfig->get()['driver'];
+            $dbConfig = config('database');
+            $dbDriver = $dbConfig['default'];
+            $config = $dbConfig[$dbDriver];
+
             $connection = match ($dbDriver) {
-                'sqlite' => SQLiteConnection::fromConfig(config: $dbConfig),
-                'mysql' => MySQLConnection::fromConfig(config: $dbConfig),
-                default => throw new \InvalidArgumentException("Unsupported database driver: {$dbConfig->get()['driver']}"),
+                'sqlite' => SQLiteConnection::fromConfig(config: $config),
+                'mysql' => MySQLConnection::fromConfig(config: $config),
+                default => throw new \InvalidArgumentException("Unsupported database driver: {$dbDriver}"),
             };
 
             return $connection;
