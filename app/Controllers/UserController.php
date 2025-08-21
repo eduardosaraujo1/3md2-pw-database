@@ -31,15 +31,8 @@ class UserController
     public function index(): Response
     {
         $users = $this->userService->getAllUsers();
-        $filtered = array_map(function (User $user) {
-            return [
-                'id' => $user->id,
-                'nome' => $user->nome,
-                'login' => $user->login,
-                'email' => $user->email,
-                'telefone' => $user->telefone,
-            ];
-        }, $users);
+        $filtered = array_map(fn(User $user) => $user->toArray(), $users);
+
         return response()->json($filtered);
     }
 
@@ -71,7 +64,7 @@ class UserController
             foto: $dados["foto"] ?? null,
         );
 
-        $user = $this->userService->createUser($userDTO) ?? [];
+        $user = $this->userService->createUser($userDTO);
 
         return response()->json(['status' => 'success', 'user' => $user]);
     }

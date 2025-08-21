@@ -28,6 +28,17 @@ class User extends Model
         );
     }
 
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'nome' => $this->nome,
+            'login' => $this->login,
+            'email' => $this->email,
+            'telefone' => $this->telefone,
+        ];
+    }
+
     public function setFoto(string $photoPath)
     {
         $this->foto = $photoPath;

@@ -19,6 +19,13 @@ class UserService
     ) {
     }
 
+    /**
+     * Cria um novo usuário no banco de dados. Pode retornar erros de conexão e erro de constraint duplicado
+     * @param \App\Domain\DTO\UserCreateDTO $data
+     * @throws \Exception
+     * @throws \App\Exceptions\UserException
+     * @return User|null
+     */
     public function createUser(UserCreateDTO $data): User|null
     {
         try {
