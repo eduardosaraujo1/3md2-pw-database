@@ -90,4 +90,11 @@ $(() => {
         formController.pushToDOM();
         refreshForm();
     };
+
+    window.fillFormEdit = function () {
+        $("#edit-senha").val("Senha123!");
+        $("#edit-confirmSenha").val("Senha123!");
+
+        refreshForm();
+    };
 });

@@ -46,7 +46,6 @@ class FormUserInterface {
     displayGeneralMessage(message) {
         const output = this.formElement.find(".js-form-message");
         output.html(message);
-        console.error(message);
     }
 }
 
