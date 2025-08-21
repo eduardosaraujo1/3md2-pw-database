@@ -25,7 +25,7 @@ class UserRepository
         try {
             return $this->databaseService->query(
                 query: "
-                    INSERT INTO $this->table (nome, login, senha, email, telefone, foto) VALUES
+                    INSERT INTO {$this->table} (nome, login, senha, email, telefone, foto) VALUES
                     (:nome, :login, :senha, :email, :telefone, :foto)",
                 params: [
                     "nome" => $user->nome,
@@ -79,10 +79,22 @@ class UserRepository
         }
     }
 
+    public function delete(int $id): void
+    {
+        try {
+            $this->databaseService->query(
+                query: "DELETE FROM {$this->table} WHERE id = :id",
+                params: ['id' => $id]
+            );
+        } catch (\PDOException $th) {
+            throw QueryException::fromPDOException($th);
+        }
+    }
+
     public function getLatest(): User|null
     {
         try {
-            $users = $this->databaseService->fetch("SELECT * FROM $this->table ORDER BY id DESC LIMIT 1");
+            $users = $this->databaseService->fetch("SELECT * FROM {$this->table} ORDER BY id DESC LIMIT 1");
             $user = $users[0] ?? null;
 
             if (!$user) {

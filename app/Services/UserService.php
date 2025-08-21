@@ -109,6 +109,15 @@ class UserService
         }
     }
 
+    public function deleteUser(int $id): void
+    {
+        if ($id === null) {
+            throw new UserException("ID do usuário é obrigatório para exclusão.");
+        }
+
+        $this->userRepository->delete($id);
+    }
+
     /**
      * @return User[]
      */

@@ -89,8 +89,8 @@ class UserController
             }
         }
 
-        // Validate 'id' is integer
-        if (!is_int($dados['id'])) {
+        // Validate 'id' is numeric
+        if (filter_var($dados['id'], FILTER_VALIDATE_INT) === false) {
             throw new UserException("O campo 'id' deve ser um número inteiro.");
         }
 
@@ -115,6 +115,22 @@ class UserController
 
     public function destroy(Request $request): Response
     {
+        $required = ['id'];
+        $dados = $request->only($required);
+
+        foreach ($required as $field) {
+            if (empty($dados[$field])) {
+                throw new UserException("O campo '{$field}' é obrigatório.");
+            }
+        }
+
+        // Validate 'id' is integer
+        if (filter_var($dados['id'], FILTER_VALIDATE_INT) === false) {
+            throw new UserException("O campo 'id' deve ser um número inteiro.");
+        }
+
+        $this->userService->deleteUser((int) $dados['id']);
+
         return response()->json(['status' => 'success']);
     }
 }

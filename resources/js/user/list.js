@@ -101,9 +101,24 @@ $(() => {
         // TODO: Adicionar lógica para editar usuário
     });
 
-    $("#userTable").on("click", ".js-btn-delete", (event) => {
+    $("#userTable").on("click", ".js-btn-delete", async (event) => {
         const userId = $(event.currentTarget).data("target");
-        console.log("Excluir usuário:", userId);
-        // TODO: Adicionar lógica para excluir usuário
+        if (!confirm("Tem certeza de que deseja excluir este usuário?")) {
+            return;
+        }
+        try {
+            const formData = new FormData();
+            formData.append("id", userId);
+            const response = await sendFormData({
+                endpoint: `/users/destroy`,
+                method: "POST",
+                formData: formData,
+            });
+            console.log("Usuário excluído com sucesso:", response);
+            // Recarregar a tabela de usuários
+            $(document).trigger("reloadUserTable");
+        } catch (xhr) {
+            console.error("Erro ao excluir usuário:", xhr.responseJSON?.["message"] ?? "Erro desconhecido");
+        }
     });
 });
