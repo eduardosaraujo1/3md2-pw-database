@@ -65,14 +65,13 @@ class FormController {
     }
 
     checkComplete() {
-        // Considera campo de arquivo como preenchido se houver arquivo
         return this.inputIds.every((id) => {
             if (id === "foto") {
                 const field = $(`input#${id}`);
                 return !!field.prop("files")?.[0];
             }
             const field = $(`input#${id}`);
-            return !!field.val();
+            return !!field.val(); // !! -> para true ou false
         });
     }
 
@@ -80,8 +79,11 @@ class FormController {
         const formData = new FormData();
         const values = this.getValues();
 
-        for (const key in values) {
-            formData.append(key, values[key]);
+        for (const id in values) {
+            const field = $(`input#${id}`);
+            const key = field.attr("name");
+            if (key == undefined) continue;
+            formData.append(key, values[id]);
         }
 
         return sendFormData({

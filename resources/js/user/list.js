@@ -59,13 +59,13 @@ class UserTableController {
     generateRowHTML(user) {
         return `
             <tr>
-                <td>${user.id}</td>
-                <td>${user.nome}</td>
-                <td>${user.login}</td>
-                <td>${user.email}</td>
-                <td>${user.telefone}</td>
+                <td data-target="${user.id}" class="js-id-field">${user.id}</td>
+                <td data-target="${user.id}" class="js-nome-field">${user.nome}</td>
+                <td data-target="${user.id}" class="js-login-field">${user.login}</td>
+                <td data-target="${user.id}" class="js-email-field">${user.email}</td>
+                <td data-target="${user.id}" class="js-telefone-field">${user.telefone}</td>
                 <td>
-                    <button data-bs-toggle="modal" data-bs-target="#editUserModal" type="button" class="btn btn-sm btn-primary me-1 js-btn-edit" title="Editar" data-target="${user.id}">
+                    <button onclick="window.onEditPress(event)" data-bs-toggle="modal" data-bs-target="#editUserModal" type="button" class="btn btn-sm btn-primary me-1 js-btn-edit" title="Editar" data-target="${user.id}">
                         <i class="bi bi-pencil"></i>
                     </button>
                     <button type="button" class="btn btn-sm btn-danger js-btn-delete" title="Excluir" data-target="${user.id}">
@@ -94,12 +94,6 @@ $(() => {
         loadUsers();
     });
     loadUsers();
-
-    $("#userTable").on("click", ".js-btn-edit", (event) => {
-        const userId = $(event.currentTarget).data("target");
-        console.log("Editar usuário:", userId);
-        // TODO: Adicionar lógica para editar usuário
-    });
 
     $("#userTable").on("click", ".js-btn-delete", async (event) => {
         const userId = $(event.currentTarget).data("target");

@@ -7,13 +7,14 @@ $(() => {
             .map((_, el) => el.id)
             .get()
     );
+    const formUI = new FormUserInterface($(".js-edit-form"));
 
     const validator = new Validator({
-        nome: (value) => (!value?.trim() ? ERROR_DICTIONARY.empty_field : null),
-        login: (value) => (!value?.trim() ? ERROR_DICTIONARY.empty_field : null),
-        email: (value) => (!/^[^@]+@[^@]+$/gm.test(value ?? "") ? ERROR_DICTIONARY.email_invalid : null),
-        telefone: (value) => (!/^\d{11,13}$/gm.test(value ?? "") ? ERROR_DICTIONARY.phone_invalid : null),
-        senha: (value, values) => {
+        "edit-nome": (value) => (!value?.trim() ? ERROR_DICTIONARY.empty_field : null),
+        "edit-login": (value) => (!value?.trim() ? ERROR_DICTIONARY.empty_field : null),
+        "edit-email": (value) => (!/^[^@]+@[^@]+$/gm.test(value ?? "") ? ERROR_DICTIONARY.email_invalid : null),
+        "edit-telefone": (value) => (!/^\d{11,13}$/gm.test(value ?? "") ? ERROR_DICTIONARY.phone_invalid : null),
+        "edit-senha": (value, values) => {
             if (!value) return ERROR_DICTIONARY.empty_field;
             if (value.length < 8) return ERROR_DICTIONARY.password_eight;
             if (!value.match(/[a-z]/g)) return ERROR_DICTIONARY.password_lower;
@@ -22,9 +23,9 @@ $(() => {
             if (!value.match(/\d/g)) return ERROR_DICTIONARY.password_number;
             return null;
         },
-        confirmSenha: (value, values) => {
+        "edit-confirmSenha": (value, values) => {
             if (!value?.trim()) return ERROR_DICTIONARY.empty_field;
-            if (value !== values.senha) return ERROR_DICTIONARY.password_mismatch;
+            if (value !== values["edit-senha"]) return ERROR_DICTIONARY.password_mismatch;
             return null;
         },
     });
@@ -39,10 +40,10 @@ $(() => {
         const errors = validator.validate(values);
 
         if (Object.keys(errors).length > 0) {
-            FormUserInterface.displayErrors(errors);
+            formUI.displayErrors(errors);
             btnSubmit.attr("disabled", true);
         } else {
-            FormUserInterface.clearErrors();
+            formUI.clearErrors();
             btnSubmit.attr("disabled", false);
         }
     };
@@ -60,7 +61,7 @@ $(() => {
         } catch (err) {
             if (err && typeof err === "object" && "responseJSON" in err) {
                 const msg = err.responseJSON;
-                FormUserInterface.displayGeneralMessage(msg?.["message"] ?? "Erro desconhecido");
+                formUI.displayGeneralMessage(msg?.["message"] ?? "Erro desconhecido");
             } else {
                 throw err;
             }
@@ -70,22 +71,23 @@ $(() => {
     btnCancel.on("click", () => {
         formController.clear();
         refreshForm();
-        FormUserInterface.displayGeneralMessage("");
+        formUI.displayGeneralMessage("");
     });
 
-    $(".js-btn-edit").on("click", () => {
-        // Code to be written later
-        // TODO: Error display broken, validation unlock broken, autofill incomplete
-    });
-
-    window.fillForm = function () {
-        $("#nome").val("Teste");
-        $("#login").val("teste" + Math.floor(Math.random() * 1000));
-        $("#email").val("teste" + Math.floor(Math.random() * 1000) + "@teste.com");
-        $("#telefone").val("11987654321");
-        $("#senha").val("Senha123!");
-        $("#confirmSenha").val("Senha123!");
-
+    window.onEditPress = (event) => {
+        // Get the target element
+        const userId = $(event.currentTarget).data("target");
+        const userRow = $(`#userTable .js-id-field[data-target="${userId}"]`).closest("tr");
+        formController.state = {
+            "edit-id": userRow.find(".js-id-field").text(),
+            "edit-nome": userRow.find(".js-nome-field").text(),
+            "edit-login": userRow.find(".js-login-field").text(),
+            "edit-email": userRow.find(".js-email-field").text(),
+            "edit-telefone": userRow.find(".js-telefone-field").text(),
+            "edit-senha": "",
+            "edit-confirm-senha": "",
+        };
+        formController.pushToDOM();
         refreshForm();
     };
 });

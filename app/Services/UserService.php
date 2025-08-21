@@ -95,7 +95,7 @@ class UserService
 
             return $updated;
         } catch (QueryException $e) {
-            if (str_contains($e->getMessage(), 'Duplicate entry')) {
+            if (str_contains($e->getMessage(), 'Duplicate entry') || str_contains($e->getMessage(), 'UNIQUE constraint failed')) {
                 if (str_contains($e->getMessage(), 'login')) {
                     throw new UserException("Este login já está em uso.");
                 } elseif (str_contains($e->getMessage(), 'email')) {

@@ -25,22 +25,26 @@ const ERROR_DICTIONARY = {
 };
 
 class FormUserInterface {
-    static displayErrors(errors) {
-        FormUserInterface.clearErrors();
+    constructor(formElement) {
+        this.formElement = formElement;
+    }
+
+    displayErrors(errors) {
+        this.clearErrors();
 
         for (const [field, message] of Object.entries(errors)) {
-            const input = $(`#${field}`);
+            const input = this.formElement.find(`#${field}`);
             input.addClass("has-error");
             input.attr("title", message);
         }
     }
 
-    static clearErrors() {
-        $(".has-error").removeClass("has-error").removeAttr("title");
+    clearErrors() {
+        this.formElement.find(".has-error").removeClass("has-error").removeAttr("title");
     }
 
-    static displayGeneralMessage(message) {
-        const output = $(".js-register-form .js-form-message");
+    displayGeneralMessage(message) {
+        const output = this.formElement.find(".js-form-message");
         output.html(message);
         console.error(message);
     }
@@ -53,6 +57,8 @@ $(() => {
             .map((_, el) => el.id)
             .get()
     );
+
+    const formUI = new FormUserInterface($(".js-register-form"));
 
     const validator = new Validator({
         nome: (value) => (!value?.trim() ? ERROR_DICTIONARY.empty_field : null),
@@ -102,10 +108,10 @@ $(() => {
         const errors = validator.validate(values);
 
         if (Object.keys(errors).length > 0) {
-            FormUserInterface.displayErrors(errors);
+            formUI.displayErrors(errors);
             btnSubmit.attr("disabled", true);
         } else {
-            FormUserInterface.clearErrors();
+            formUI.clearErrors();
             btnSubmit.attr("disabled", false);
         }
     };
@@ -123,7 +129,7 @@ $(() => {
         } catch (err) {
             if (err && typeof err === "object" && "responseJSON" in err) {
                 const msg = err.responseJSON;
-                FormUserInterface.displayGeneralMessage(msg?.["message"] ?? "Erro desconhecido");
+                formUI.displayGeneralMessage(msg?.["message"] ?? "Erro desconhecido");
             } else {
                 throw err;
             }
@@ -132,7 +138,7 @@ $(() => {
     btnCancel.on("click", () => {
         formController.clear();
         refreshForm();
-        FormUserInterface.displayGeneralMessage("");
+        formUI.displayGeneralMessage("");
     });
 
     window.fillForm = function () {
