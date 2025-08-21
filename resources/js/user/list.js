@@ -65,7 +65,7 @@ class UserTableController {
                 <td>${user.email}</td>
                 <td>${user.telefone}</td>
                 <td>
-                    <button type="button" class="btn btn-sm btn-primary me-1 js-btn-edit" title="Editar" data-target="${user.id}">
+                    <button data-bs-toggle="modal" data-bs-target="#editUserModal" type="button" class="btn btn-sm btn-primary me-1 js-btn-edit" title="Editar" data-target="${user.id}">
                         <i class="bi bi-pencil"></i>
                     </button>
                     <button type="button" class="btn btn-sm btn-danger js-btn-delete" title="Excluir" data-target="${user.id}">

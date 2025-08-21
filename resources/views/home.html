@@ -224,6 +224,124 @@
                 </div>
             </div>
         </div>
+
+        <!-- Modal de Edição -->
+        <div
+            class="modal fade js-edit-form"
+            id="editUserModal"
+            tabindex="-1"
+            aria-labelledby="editUserModalLabel"
+            aria-hidden="true"
+        >
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title fw-semibold" id="editUserModalLabel">Editar Usuário</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body overflow-auto" style="max-height: max(400px, 70vh)">
+                        <div class="mb-2">
+                            <label for="edit-nome" class="form-label">Nome <span class="text-danger">*</span></label>
+                            <input
+                                type="text"
+                                id="edit-nome"
+                                name="nome"
+                                class="form-control"
+                                placeholder="Nome"
+                                required
+                            />
+                        </div>
+                        <div class="mb-2">
+                            <label for="edit-login" class="form-label">Login <span class="text-danger">*</span></label>
+                            <input
+                                type="text"
+                                id="edit-login"
+                                name="login"
+                                class="form-control"
+                                placeholder="Login"
+                                required
+                            />
+                        </div>
+                        <div class="row mb-2 p-0">
+                            <div class="col-md-6">
+                                <label for="edit-senha" class="form-label"
+                                    >Senha <span class="text-danger">*</span></label
+                                >
+                                <div class="position-relative">
+                                    <input
+                                        type="password"
+                                        id="edit-senha"
+                                        name="senha"
+                                        class="form-control"
+                                        placeholder="Senha"
+                                        required
+                                    />
+                                    <img
+                                        data-visible="false"
+                                        data-target="edit-senha"
+                                        src="/resources/assets/icons/eye-slash-solid.svg"
+                                        alt="eye-solid"
+                                        class="show-password"
+                                    />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="edit-confirmSenha" class="form-label"
+                                    >Confirmar Senha <span class="text-danger">*</span></label
+                                >
+                                <div class="position-relative">
+                                    <input
+                                        type="password"
+                                        id="edit-confirmSenha"
+                                        class="form-control"
+                                        placeholder="Confirmar Senha"
+                                        required
+                                    />
+                                    <img
+                                        data-visible="false"
+                                        data-target="edit-confirmSenha"
+                                        src="/resources/assets/icons/eye-slash-solid.svg"
+                                        alt="eye-solid"
+                                        class="show-password"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <label for="edit-email" class="form-label">E-mail <span class="text-danger">*</span></label>
+                            <input
+                                type="email"
+                                id="edit-email"
+                                name="email"
+                                class="form-control"
+                                placeholder="E-mail"
+                                required
+                            />
+                        </div>
+                        <div class="mb-2">
+                            <label for="edit-telefone" class="form-label"
+                                >Telefone <span class="text-danger">*</span></label
+                            >
+                            <input
+                                type="text"
+                                id="edit-telefone"
+                                name="telefone"
+                                class="form-control"
+                                placeholder="Telefone"
+                                required
+                            />
+                        </div>
+                    </div>
+                    <div class="modal-footer js-edit-form">
+                        <span class="js-form-message text-secondary"></span>
+                        <button type="button" id="edit-cancel" class="btn btn-secondary" data-bs-dismiss="modal">
+                            Cancelar
+                        </button>
+                        <button type="button" id="edit-submit" class="btn btn-primary">Salvar Alterações</button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <script
             src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
