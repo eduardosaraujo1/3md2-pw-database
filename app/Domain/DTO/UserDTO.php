@@ -2,7 +2,7 @@
 
 namespace App\Domain\DTO;
 
-class UserRegisterDTO
+class UserDTO
 {
     public function __construct(
         public string $nome,

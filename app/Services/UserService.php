@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Domain\DTO\UserRegisterDTO;
+use App\Domain\DTO\UserDTO;
 use App\Models\User;
 use App\Repositories\UserRepository;
 use Core\Services\Session;
@@ -29,7 +29,43 @@ class UserService
         return $user; // if user is null, response is also null
     }
 
-    public function updateUser(int $id, UserRegisterDTO $data): User
+    public function createUser(UserDTO $data): User|null
+    {
+        // Prevent duplicates
+        $duplicates = $this->userRepository->checkDuplicates(
+            email: $data->email,
+            login: $data->login
+        );
+
+        if ($duplicates['login']) {
+            throw new \InvalidArgumentException("Login já está em uso");
+        }
+        if ($duplicates['email']) {
+            throw new \InvalidArgumentException("Email já está em uso");
+        }
+
+        // Store photo
+        $dataArray = $data->toArray();
+        if ($data->foto) {
+            $dataArray['foto'] = $this->imageStorageService->store($data->foto);
+        }
+
+        // Insert registry
+        $this->userRepository->insert($dataArray);
+
+        // read last result
+        return $this->userRepository->getLatest();
+    }
+
+    /**
+     * @return User[]
+     */
+    public function getAllUsers(): array
+    {
+        return $this->userRepository->all();
+    }
+
+    public function updateUser(int $id, UserDTO $data): User
     {
         $existingUser = $this->userRepository->findById((string) $id);
 
@@ -66,39 +102,4 @@ class UserService
         }
     }
 
-    public function createUser(UserRegisterDTO $data): User|null
-    {
-        // Prevent duplicates
-        $duplicates = $this->userRepository->checkDuplicates(
-            email: $data->email,
-            login: $data->login
-        );
-
-        if ($duplicates['login']) {
-            throw new \InvalidArgumentException("Login já está em uso");
-        }
-        if ($duplicates['email']) {
-            throw new \InvalidArgumentException("Email já está em uso");
-        }
-
-        // Store photo
-        $dataArray = $data->toArray();
-        if ($data->foto) {
-            $dataArray['foto'] = $this->imageStorageService->store($data->foto);
-        }
-
-        // Insert registry
-        $this->userRepository->insert($dataArray);
-
-        // read last result
-        return $this->userRepository->getLatest();
-    }
-
-    /**
-     * @return User[]
-     */
-    public function getAllUsers(): array
-    {
-        return $this->userRepository->all();
-    }
 }

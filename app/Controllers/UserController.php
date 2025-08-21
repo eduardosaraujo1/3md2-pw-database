@@ -2,7 +2,8 @@
 
 namespace App\Controllers;
 
-use App\Domain\DTO\UserRegisterDTO;
+use App\Domain\DTO\UserDTO;
+use App\Exceptions\UserException;
 use App\Models\User;
 use App\Services\AuthService;
 use App\Services\UserService;
@@ -66,7 +67,7 @@ class UserController
             }
 
             // Logic
-            $userDTO = new UserRegisterDTO(
+            $userDTO = new UserDTO(
                 nome: $dados['nome'],
                 login: $dados['login'],
                 email: $dados['email'],
@@ -78,6 +79,51 @@ class UserController
             $user = $this->userService->createUser($userDTO) ?? [];
 
             return response()->json(['status' => 'success', 'user' => $user]);
+        } catch (Exception $e) {
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
+        }
+    }
+
+    public function update(Request $request): Response
+    {
+        try {
+            // Form validation
+            $allowed = ['id', 'nome', 'login', 'email', 'senha', 'telefone', 'foto'];
+            $dados = $request->only($allowed);
+
+            // Validate 'foto' field (must be nullable array)
+            if (isset($dados['foto']) && !is_array($dados['foto'])) {
+                // throw new Exception("O campo 'foto' deve ser um array ou nulo.");
+                $dados['foto'] = null;
+            }
+
+            // Validate 'id' is integer
+            if (!is_int($dados['id'])) {
+                throw new UserException("O campo 'id' deve ser um número inteiro.");
+            }
+
+            // Logic
+            $userDTO = new UserDTO(
+                nome: $dados['nome'],
+                login: $dados['login'],
+                email: $dados['email'],
+                senha: $dados['senha'],
+                telefone: $dados['telefone'],
+                foto: $dados["foto"] ?? null,
+            );
+
+            $user = $this->userService->updateUser($dados['id'], $userDTO) ?? [];
+
+            return response()->json(['status' => 'success', 'user' => $user]);
+        } catch (Exception $e) {
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
+        }
+    }
+
+    public function destroy(Request $request): Response
+    {
+        try {
+            return response()->json(['status' => 'success']);
         } catch (Exception $e) {
             return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
         }
@@ -118,7 +164,7 @@ class UserController
                 }
             }
 
-            $userUpdateDTO = new UserRegisterDTO(
+            $userUpdateDTO = new UserDTO(
                 nome: $data['nome'],
                 login: $data['login'],
                 email: $data['email'],
