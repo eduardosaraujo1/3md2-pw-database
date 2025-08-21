@@ -5,9 +5,12 @@ require 'core/functions.php';
 
 use Core\Http\Kernel;
 use Core\Http\Request;
+use Core\Services\ProviderService;
 
 // Bootstrap app service providers
-app()->bootstrap();
+ProviderService::fromConfig()->load(
+    container: app()
+);
 
 // Router
 require 'routes/rest.php';

@@ -32,6 +32,12 @@ $router->get('/users', function () use ($userController): Response {
 $router->post('/users/store', function (Request $request) use ($userController): Response {
     return $userController->store($request);
 });
+$router->post('/users/update', function (Request $request) use ($userController): Response {
+    return $userController->update($request);
+});
+$router->post('/users/destroy', function (Request $request) use ($userController): Response {
+    return $userController->destroy($request);
+});
 
 // Deprecated
 $router->get('/profile', function () use ($userController): Response {

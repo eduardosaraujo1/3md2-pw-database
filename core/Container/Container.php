@@ -16,47 +16,7 @@ class Container
 
     public static function getInstance(): self
     {
-        if (self::$instance === null) {
-            self::$instance = new self();
-        }
-        return self::$instance;
-    }
-
-    public function bootstrap()
-    {
-        // get service provider list from config
-        $providers = config("providers") ?? [];
-        array_unshift($providers, CoreServiceProvider::class);
-
-        // register all providers
-        foreach ($providers as $provider) {
-            $this->registerProvider($provider);
-        }
-
-        // then boot all providers
-        foreach ($providers as $provider) {
-            $this->bootProvider($provider);
-        }
-    }
-
-    private function registerProvider(string $provider): void
-    {
-        if (!class_exists($provider)) {
-            throw new \InvalidArgumentException("Provider class '{$provider}' not found.");
-        }
-
-        $providerInstance = new $provider($this);
-        $providerInstance->register();
-    }
-
-    private function bootProvider(string $provider): void
-    {
-        if (!class_exists($provider)) {
-            throw new \InvalidArgumentException("Provider class '{$provider}' not found.");
-        }
-
-        $providerInstance = new $provider($this);
-        $providerInstance->boot();
+        return self::$instance ??= new self();
     }
 
     public function bind(string $abstract, callable $factory): void
