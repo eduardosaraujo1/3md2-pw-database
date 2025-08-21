@@ -2,7 +2,7 @@
 
 namespace App\Domain\DTO;
 
-class UserDTO
+class UserCreateDTO
 {
     public function __construct(
         public readonly string $nome,
@@ -11,7 +11,6 @@ class UserDTO
         public readonly string $senha,
         public readonly string $telefone,
         public readonly ?array $foto = null,
-        public readonly ?int $id = null,
     ) {
     }
 

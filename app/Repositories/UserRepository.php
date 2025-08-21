@@ -50,6 +50,10 @@ class UserRepository
     public function update(User $user): bool
     {
         $id = $user->id;
+        if ($id === null) {
+            throw new QueryException("ID do usuário é obrigatório para atualização.", 0);
+        }
+
         try {
             return $this->databaseService->query(
                 query: "
@@ -77,13 +81,18 @@ class UserRepository
 
     public function getLatest(): User|null
     {
-        $users = $this->databaseService->fetch("SELECT * FROM $this->table ORDER BY id DESC LIMIT 1");
-        $user = $users[0] ?? null;
+        try {
+            $users = $this->databaseService->fetch("SELECT * FROM $this->table ORDER BY id DESC LIMIT 1");
+            $user = $users[0] ?? null;
 
-        if (!$user)
-            return null;
+            if (!$user) {
+                return null;
+            }
 
-        return User::fromArray($user);
+            return User::fromArray($user);
+        } catch (\PDOException $e) {
+            throw QueryException::fromPDOException($e);
+        }
     }
 
     public function findById(string $id): ?User

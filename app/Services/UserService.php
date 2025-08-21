@@ -2,7 +2,8 @@
 
 namespace App\Services;
 
-use App\Domain\DTO\UserDTO;
+use App\Domain\DTO\UserCreateDTO;
+use App\Domain\DTO\UserUpdateDTO;
 use App\Exceptions\QueryException;
 use App\Exceptions\UserException;
 use App\Models\User;
@@ -18,7 +19,7 @@ class UserService
     ) {
     }
 
-    public function createUser(UserDTO $data): User|null
+    public function createUser(UserCreateDTO $data): User|null
     {
         try {
             $user = new User(
@@ -33,7 +34,8 @@ class UserService
 
             // Store photo
             if ($data->foto) {
-                $user->foto = $this->imageStorageService->store($data->foto);
+                $fotoPath = $this->imageStorageService->store($data->foto);
+                $user->setFoto($fotoPath);
             }
 
             if (!$this->userRepository->insert($user)) {
@@ -57,7 +59,7 @@ class UserService
         }
     }
 
-    public function updateUser(UserDTO $userDTO): User
+    public function updateUser(UserUpdateDTO $userDTO): User
     {
         if ($userDTO->id === null) {
             throw new UserException("ID do usuário é obrigatório para atualização.");
@@ -72,11 +74,11 @@ class UserService
         try {
             $user = new User(
                 id: $userDTO->id,
-                nome: $userDTO->nome,
-                login: $userDTO->login,
-                senha: $userDTO->senha,
-                email: $userDTO->email,
-                telefone: $userDTO->telefone,
+                nome: $userDTO->nome ?? $existingUser->nome,
+                login: $userDTO->login ?? $existingUser->login,
+                senha: $userDTO->senha ?? $existingUser->senha,
+                email: $userDTO->email ?? $existingUser->email,
+                telefone: $userDTO->telefone ?? $existingUser->telefone,
                 foto: $existingUser->foto
             );
             $success = $this->userRepository->update($user);

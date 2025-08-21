@@ -38,11 +38,3 @@ $router->post('/users/update', function (Request $request) use ($userController)
 $router->post('/users/destroy', function (Request $request) use ($userController): Response {
     return $userController->destroy($request);
 });
-
-// Deprecated
-$router->get('/profile', function () use ($userController): Response {
-    return $userController->getProfile();
-});
-$router->post('/profile/update', function (Request $request) use ($userController): Response {
-    return $userController->updateProfile($request);
-});

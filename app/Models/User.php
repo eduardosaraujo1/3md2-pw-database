@@ -27,4 +27,9 @@ class User extends Model
             foto: $arr['foto'] ?? null
         );
     }
+
+    public function setFoto(string $photoPath)
+    {
+        $this->foto = $photoPath;
+    }
 }

@@ -2,7 +2,8 @@
 
 namespace App\Controllers;
 
-use App\Domain\DTO\UserDTO;
+use App\Domain\DTO\UserCreateDTO;
+use App\Domain\DTO\UserUpdateDTO;
 use App\Exceptions\UserException;
 use App\Models\User;
 use App\Services\AuthService;
@@ -13,7 +14,6 @@ use Exception;
 
 class UserController
 {
-
     public function __construct(
         public UserService $userService,
         public AuthService $authService
@@ -62,7 +62,7 @@ class UserController
         }
 
         // Logic
-        $userDTO = new UserDTO(
+        $userDTO = new UserCreateDTO(
             nome: $dados['nome'],
             login: $dados['login'],
             email: $dados['email'],
@@ -79,8 +79,9 @@ class UserController
     public function update(Request $request): Response
     {
         // Form validation
-        $required = ['id', 'nome', 'login', 'email', 'senha', 'telefone'];
-        $dados = $request->only($required);
+        $required = ['id'];
+        $allowed = ['id', 'nome', 'login', 'email', 'senha', 'telefone'];
+        $dados = $request->only($allowed);
 
         foreach ($required as $field) {
             if (empty($dados[$field])) {
@@ -94,16 +95,20 @@ class UserController
         }
 
         // Logic
-        $userDTO = new UserDTO(
+        $userDTO = new UserUpdateDTO(
             id: (int) $dados['id'],
-            nome: $dados['nome'] ?? '',
-            login: $dados['login'] ?? '',
-            email: $dados['email'] ?? '',
-            senha: $dados['senha'] ?? '',
-            telefone: $dados['telefone'] ?? '',
+            nome: $dados['nome'] ?? null,
+            login: $dados['login'] ?? null,
+            email: $dados['email'] ?? null,
+            senha: $dados['senha'] ?? null,
+            telefone: $dados['telefone'] ?? null,
         );
 
-        $user = $this->userService->updateUser($userDTO) ?? [];
+        $user = $this->userService->updateUser($userDTO);
+
+        if (!$user) {
+            throw new Exception('Erro ao atualizar usuário.');
+        }
 
         return response()->json(['status' => 'success', 'user' => $user]);
     }
@@ -111,57 +116,5 @@ class UserController
     public function destroy(Request $request): Response
     {
         return response()->json(['status' => 'success']);
-    }
-
-    // Descontinuado
-    public function getProfile(): Response
-    {
-        try {
-            $user = $this->authService->getCurrentUser();
-
-            if (!$user) {
-                throw new Exception("Usuário não autenticado");
-            }
-
-            return response()->json($user);
-        } catch (Exception $e) {
-            return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
-        }
-    }
-
-
-    public function updateProfile(Request $request): Response
-    {
-        try {
-            $data = $request->all();
-            $user = $this->authService->getCurrentUser();
-
-            if (!$user) {
-                throw new Exception("Usuário não autenticado.");
-            }
-
-            $requiredFields = ['nome', 'login', 'email', 'senha', 'telefone'];
-
-            foreach ($requiredFields as $field) {
-                if (empty($data[$field])) {
-                    throw new Exception("O campo '{$field}' é obrigatório.");
-                }
-            }
-
-            $userUpdateDTO = new UserDTO(
-                nome: $data['nome'],
-                login: $data['login'],
-                email: $data['email'],
-                senha: $data['senha'],
-                telefone: $data['telefone'],
-            );
-
-            $updatedUser = $this->userService->updateUser($user->id, $userUpdateDTO);
-
-            return response()->json(['status' => 'success', 'user' => $updatedUser]);
-
-        } catch (Exception $e) {
-            return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
-        }
     }
 }
