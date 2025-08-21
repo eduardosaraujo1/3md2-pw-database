@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\User;
+use App\Exceptions\QueryException;
 use Core\Services\Database;
 
 class UserRepository
@@ -16,10 +17,10 @@ class UserRepository
 
     /**
      * Aviso: aplica hash bcrypt12 nas senhas
-     *  @param array{nome:string,login:string,senha:string,email:string,telefone:string,foto:string} $data
-     *  @return bool
+     * @param User $user
+     * @return bool
      */
-    public function insert(array $data): bool
+    public function insert(User $user): bool
     {
         try {
             return $this->databaseService->query(
@@ -27,28 +28,28 @@ class UserRepository
                     INSERT INTO $this->table (nome, login, senha, email, telefone, foto) VALUES
                     (:nome, :login, :senha, :email, :telefone, :foto)",
                 params: [
-                    "nome" => $data['nome'],
-                    "login" => $data['login'],
-                    "senha" => password_hash($data['senha'], PASSWORD_BCRYPT),
-                    "email" => $data['email'],
-                    "telefone" => $data['telefone'],
-                    "foto" => $data['foto']
+                    "nome" => $user->nome,
+                    "login" => $user->login,
+                    "senha" => password_hash($user->senha, PASSWORD_BCRYPT),
+                    "email" => $user->email,
+                    "telefone" => $user->telefone,
+                    "foto" => $user->foto
                 ]
             );
         } catch (\PDOException $e) {
-            throw new \Exception("Erro ao inserir usuário: " . $e->getMessage());
+            throw QueryException::fromPDOException($e);
         }
     }
 
     /**
      * Atualiza os dados do usuário.
      * Aviso: aplica hash bcrypt12 na senha.
-     * @param int $id Identificador do usuário a ser atualizado.
-     * @param array{nome:string,login:string,senha:string,email:string,telefone:string,foto:string} $data
+     * @param User $user
      * @return bool
      */
-    public function update(int $id, array $data): bool
+    public function update(User $user): bool
     {
+        $id = $user->id;
         try {
             return $this->databaseService->query(
                 query: "
@@ -62,15 +63,15 @@ class UserRepository
             ",
                 params: [
                     "id" => $id,
-                    "nome" => $data['nome'],
-                    "login" => $data['login'],
-                    "senha" => password_hash($data['senha'], PASSWORD_BCRYPT),
-                    "email" => $data['email'],
-                    "telefone" => $data['telefone'],
+                    "nome" => $user->nome,
+                    "login" => $user->login,
+                    "senha" => password_hash($user->senha, PASSWORD_BCRYPT),
+                    "email" => $user->email,
+                    "telefone" => $user->telefone,
                 ]
             );
         } catch (\PDOException $e) {
-            throw new \Exception("Erro ao atualizar usuário: " . $e->getMessage());
+            throw QueryException::fromPDOException($e);
         }
     }
 
@@ -85,77 +86,59 @@ class UserRepository
         return User::fromArray($user);
     }
 
-    /**
-     * @return array{email: bool, login: bool}
-     */
-    public function checkDuplicates(string $login, string $email): array
-    {
-        $data = $this->databaseService->fetch(
-            query: "SELECT login, email FROM $this->table WHERE login = :login OR email = :email",
-            params: [
-                "login" => $login,
-                "email" => $email
-            ]
-        );
-
-        $result = [
-            'email' => false,
-            'login' => false
-        ];
-
-        foreach ($data as $row) {
-            if (isset($row['email']) && $row['email'] === $email) {
-                $result['email'] = true;
-            }
-            if (isset($row['login']) && $row['login'] === $login) {
-                $result['login'] = true;
-            }
-        }
-
-        return $result;
-    }
-
     public function findById(string $id): ?User
     {
-        $data = $this->databaseService->fetch(
-            query: "SELECT * FROM {$this->table} WHERE id = :id",
-            params: ['id' => $id]
-        );
+        try {
+            $data = $this->databaseService->fetch(
+                query: "SELECT * FROM {$this->table} WHERE id = :id",
+                params: ['id' => $id]
+            );
 
-        if (empty($data)) {
-            return null;
+            if (empty($data)) {
+                return null;
+            }
+
+            return User::fromArray($data[0] ?? []);
+        } catch (\PDOException $e) {
+            throw QueryException::fromPDOException($e);
         }
-
-        return User::fromArray($data[0]);
     }
 
     public function findByLoginAndPassword(string $login, string $password): ?User
     {
-        $data = $this->databaseService->fetch(
-            query: "SELECT * FROM {$this->table} WHERE login = :login OR email = :email",
-            params: [
-                "login" => $login,
-                "email" => $login
-            ]
-        );
+        try {
+            $data = $this->databaseService->fetch(
+                query: "SELECT * FROM {$this->table} WHERE login = :login OR email = :email",
+                params: [
+                    "login" => $login,
+                    "email" => $login
+                ]
+            );
 
-        if (empty($data)) {
-            return null;
+            if (empty($data)) {
+                return null;
+            }
+
+            $user = User::fromArray($data[0] ?? []);
+
+            if (!password_verify($password, $user->senha)) {
+                return null;
+            }
+
+            return $user;
+        } catch (\PDOException $e) {
+            throw QueryException::fromPDOException($e);
         }
-
-        $user = User::fromArray($data[0]);
-
-        if (!password_verify($password, $user->senha)) {
-            return null;
-        }
-
-        return $user;
     }
 
     public function all(): array
     {
-        $data = $this->databaseService->fetch("SELECT * FROM {$this->table}");
+        try {
+            $data = $this->databaseService->fetch("SELECT * FROM {$this->table}");
 
-        return array_map(fn($user) => User::fromArray($user), $data);
+            return array_map(fn(array $user) => User::fromArray($user), $data);
+        } catch (\PDOException $e) {
+            throw QueryException::fromPDOException($e);
+        }
     }
 }

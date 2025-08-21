@@ -26,6 +26,19 @@ class AuthService
         return $user;
     }
 
+    public function getCurrentUser(): ?User
+    {
+        $user_id = $this->sessionService->get('user_id');
+
+        if (!$user_id) {
+            return null;
+        }
+
+        $user = $this->userRepository->findById($user_id);
+
+        return $user; // if user is null, response is also null
+    }
+
     public function isSignedIn()
     {
         return $this->sessionService->has('user_id');

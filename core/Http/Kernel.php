@@ -2,6 +2,7 @@
 
 namespace Core\Http;
 
+use App\Exceptions\UserException;
 use Core\Routing\Router;
 
 class Kernel
@@ -18,10 +19,20 @@ class Kernel
             method: $method,
             uri: $uri
         );
-        $processed = $callback($request);
+        // Callback with default response handler
+        try {
+            $processed = $callback($request);
+        } catch (UserException $e) {
+            $processed = response()->json(
+                data: ['status' => 'error', 'message' => $e->getMessage()],
+                code: 400
+            );
+        } catch (\Exception $e) {
+            error_log("Route callback failed: " . $e->getMessage());
+            $processed = response()->json(['status' => 'error', 'message' => '500 Internal Server Error'], 500);
+        }
 
         if ($processed instanceof Response) {
-            error_log("Route callback failed to return a Response object.");
             return $processed;
         }
 

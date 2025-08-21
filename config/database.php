@@ -1,6 +1,6 @@
 <?php
 return [
-    'default' => 'mysql',
+    'default' => 'sqlite',
     'mysql' => [
         'connection' => [
             'host' => 'localhost',

@@ -30,110 +30,94 @@ class UserController
 
     public function index(): Response
     {
-        try {
-            $users = $this->userService->getAllUsers();
-            $filtered = array_map(function (User $user) {
-                return [
-                    'id' => $user->id,
-                    'nome' => $user->nome,
-                    'login' => $user->login,
-                    'email' => $user->email,
-                    'telefone' => $user->telefone,
-                ];
-            }, $users);
-            return response()->json($filtered);
-        } catch (Exception $e) {
-            return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
-        }
+        $users = $this->userService->getAllUsers();
+        $filtered = array_map(function (User $user) {
+            return [
+                'id' => $user->id,
+                'nome' => $user->nome,
+                'login' => $user->login,
+                'email' => $user->email,
+                'telefone' => $user->telefone,
+            ];
+        }, $users);
+        return response()->json($filtered);
     }
 
     public function store(Request $request): Response
     {
-        try {
-            // Form validation
-            $required = ['nome', 'login', 'email', 'senha', 'telefone'];
-            $dados = $request->only([...$required, 'foto']);
+        // Form validation
+        $required = ['nome', 'login', 'email', 'senha', 'telefone'];
+        $dados = $request->only([...$required, 'foto']);
 
-            foreach ($required as $field) {
-                if (empty($dados[$field])) {
-                    throw new Exception("O campo '{$field}' é obrigatório.");
-                }
+        foreach ($required as $field) {
+            if (empty($dados[$field])) {
+                throw new UserException("O campo '{$field}' é obrigatório.");
             }
-
-            // Validate 'foto' field (must be nullable array)
-            if (isset($dados['foto']) && !is_array($dados['foto'])) {
-                // throw new Exception("O campo 'foto' deve ser um array ou nulo.");
-                $dados['foto'] = null;
-            }
-
-            // Logic
-            $userDTO = new UserDTO(
-                nome: $dados['nome'],
-                login: $dados['login'],
-                email: $dados['email'],
-                senha: $dados['senha'],
-                telefone: $dados['telefone'],
-                foto: $dados["foto"] ?? null,
-            );
-
-            $user = $this->userService->createUser($userDTO) ?? [];
-
-            return response()->json(['status' => 'success', 'user' => $user]);
-        } catch (Exception $e) {
-            return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
         }
+
+        // Validate 'foto' field (must be nullable array)
+        if (isset($dados['foto']) && !is_array($dados['foto'])) {
+            // throw new Exception("O campo 'foto' deve ser um array ou nulo.");
+            $dados['foto'] = null;
+        }
+
+        // Logic
+        $userDTO = new UserDTO(
+            nome: $dados['nome'],
+            login: $dados['login'],
+            email: $dados['email'],
+            senha: $dados['senha'],
+            telefone: $dados['telefone'],
+            foto: $dados["foto"] ?? null,
+        );
+
+        $user = $this->userService->createUser($userDTO) ?? [];
+
+        return response()->json(['status' => 'success', 'user' => $user]);
     }
 
     public function update(Request $request): Response
     {
-        try {
-            // Form validation
-            $allowed = ['id', 'nome', 'login', 'email', 'senha', 'telefone', 'foto'];
-            $dados = $request->only($allowed);
+        // Form validation
+        $required = ['id', 'nome', 'login', 'email', 'senha', 'telefone'];
+        $dados = $request->only($required);
 
-            // Validate 'foto' field (must be nullable array)
-            if (isset($dados['foto']) && !is_array($dados['foto'])) {
-                // throw new Exception("O campo 'foto' deve ser um array ou nulo.");
-                $dados['foto'] = null;
+        foreach ($required as $field) {
+            if (empty($dados[$field])) {
+                throw new UserException("O campo '{$field}' é obrigatório.");
             }
-
-            // Validate 'id' is integer
-            if (!is_int($dados['id'])) {
-                throw new UserException("O campo 'id' deve ser um número inteiro.");
-            }
-
-            // Logic
-            $userDTO = new UserDTO(
-                nome: $dados['nome'],
-                login: $dados['login'],
-                email: $dados['email'],
-                senha: $dados['senha'],
-                telefone: $dados['telefone'],
-                foto: $dados["foto"] ?? null,
-            );
-
-            $user = $this->userService->updateUser($dados['id'], $userDTO) ?? [];
-
-            return response()->json(['status' => 'success', 'user' => $user]);
-        } catch (Exception $e) {
-            return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
         }
+
+        // Validate 'id' is integer
+        if (!is_int($dados['id'])) {
+            throw new UserException("O campo 'id' deve ser um número inteiro.");
+        }
+
+        // Logic
+        $userDTO = new UserDTO(
+            id: (int) $dados['id'],
+            nome: $dados['nome'] ?? '',
+            login: $dados['login'] ?? '',
+            email: $dados['email'] ?? '',
+            senha: $dados['senha'] ?? '',
+            telefone: $dados['telefone'] ?? '',
+        );
+
+        $user = $this->userService->updateUser($userDTO) ?? [];
+
+        return response()->json(['status' => 'success', 'user' => $user]);
     }
 
     public function destroy(Request $request): Response
     {
-        try {
-            return response()->json(['status' => 'success']);
-        } catch (Exception $e) {
-            return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
-        }
+        return response()->json(['status' => 'success']);
     }
 
     // Descontinuado
     public function getProfile(): Response
     {
         try {
-            $user = $this->userService->getCurrentUser();
+            $user = $this->authService->getCurrentUser();
 
             if (!$user) {
                 throw new Exception("Usuário não autenticado");
@@ -150,7 +134,7 @@ class UserController
     {
         try {
             $data = $request->all();
-            $user = $this->userService->getCurrentUser();
+            $user = $this->authService->getCurrentUser();
 
             if (!$user) {
                 throw new Exception("Usuário não autenticado.");

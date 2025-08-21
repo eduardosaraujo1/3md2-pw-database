@@ -5,12 +5,13 @@ namespace App\Domain\DTO;
 class UserDTO
 {
     public function __construct(
-        public string $nome,
-        public string $login,
-        public string $email,
-        public string $senha,
-        public string $telefone,
-        public ?array $foto = null,
+        public readonly string $nome,
+        public readonly string $login,
+        public readonly string $email,
+        public readonly string $senha,
+        public readonly string $telefone,
+        public readonly ?array $foto = null,
+        public readonly ?int $id = null,
     ) {
     }
 
