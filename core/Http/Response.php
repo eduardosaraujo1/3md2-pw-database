@@ -59,4 +59,9 @@ class Response
 
         return $this;
     }
+
+    public function getBody(): string
+    {
+        return $this->body;
+    }
 }

@@ -42,6 +42,7 @@ class FormUserInterface {
     static displayGeneralMessage(message) {
         const output = $(".js-register-form .js-form-message");
         output.html(message);
+        console.error(message);
     }
 }
 
@@ -122,7 +123,7 @@ $(() => {
         } catch (err) {
             if (err && typeof err === "object" && "responseJSON" in err) {
                 const msg = err.responseJSON;
-                FormUserInterface.displayGeneralMessage(msg?.["error"], "error");
+                FormUserInterface.displayGeneralMessage(msg?.["message"] ?? "Erro desconhecido");
             } else {
                 throw err;
             }
@@ -131,6 +132,7 @@ $(() => {
     btnCancel.on("click", () => {
         formController.clear();
         refreshForm();
+        FormUserInterface.displayGeneralMessage("");
     });
 
     window.fillForm = function () {
