@@ -31,8 +31,12 @@ class Kernel
                 data: ['message' => $message],
                 code: $code
             );
-        } catch (\Exception $e) {
-            error_log("Route callback failed: " . $e->getMessage());
+        } catch (\Throwable $e) {
+            // error_log("Route callback failed: " . $e->getMessage());
+            error_log(message: "---\nRoute callback failed:
+{$e->getMessage()}
+{$e->getTraceAsString()}
+");
 
             $message = '500 Internal Server Error';
             $code = ($e->getCode() >= 500 && $e->getCode() < 600) ? $e->getCode() : 500;

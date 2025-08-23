@@ -1,3 +1,4 @@
 storage
 *.sqlite
 /vendor/
+errors.log
