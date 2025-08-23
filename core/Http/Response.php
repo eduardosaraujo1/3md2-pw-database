@@ -35,7 +35,7 @@ class Response
         return $this;
     }
 
-    public function json($data, int $code = 200): self
+    public function json(array $data, int $code = 200): self
     {
         $this->header('Content-Type', 'application/json');
         $this->status = $code;

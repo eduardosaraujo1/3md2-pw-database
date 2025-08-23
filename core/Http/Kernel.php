@@ -4,6 +4,7 @@ namespace Core\Http;
 
 use App\Exceptions\UserException;
 use Core\Routing\Router;
+use Core\Support\ResponseFactory;
 
 class Kernel
 {
@@ -19,26 +20,42 @@ class Kernel
             method: $method,
             uri: $uri
         );
-        // Callback with default response handler
+
         try {
             $processed = $callback($request);
         } catch (UserException $e) {
-            $processed = response()->json(
-                data: ['status' => 'error', 'message' => $e->getMessage()],
-                code: 400
+            $message = $e->getMessage();
+            $code = ($e->getCode() >= 400 && $e->getCode() < 500) ? $e->getCode() : 400;
+
+            $processed = ResponseFactory::fromArray(
+                data: ['message' => $message],
+                code: $code
             );
         } catch (\Exception $e) {
             error_log("Route callback failed: " . $e->getMessage());
-            $processed = response()->json(['status' => 'error', 'message' => '500 Internal Server Error'], 500);
+
+            $message = '500 Internal Server Error';
+            $code = ($e->getCode() >= 500 && $e->getCode() < 600) ? $e->getCode() : 500;
+
+            $processed = ResponseFactory::fromArray(
+                data: ['message' => $message],
+                code: $code
+            );
         }
 
         if ($processed instanceof Response) {
             return $processed;
+        } elseif (is_array($processed)) {
+            return ResponseFactory::fromArray($processed);
+        } elseif (is_string($processed)) {
+            return ResponseFactory::fromString(message: $processed);
         }
 
-        return response()->json(
-            data: ['status' => 'error', 'message' => '500 Internal Server Error'],
-            code: 404
+        return ResponseFactory::fromArray(
+            data: [
+                'message' => '500 Internal Server Error'
+            ],
+            code: 500
         );
     }
 }
