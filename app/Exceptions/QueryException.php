@@ -12,9 +12,10 @@ class QueryException extends UserException
 
     public static function fromPDOException(\PDOException $exception): self
     {
+        $sqlErrorCode = is_numeric($exception->getCode()) ? (int) $exception->getCode() : 0;
         return new self(
             message: $exception->getMessage(),
-            sqlErrorCode: $exception->getCode(),
+            sqlErrorCode: $sqlErrorCode,
             previous: $exception
         );
     }

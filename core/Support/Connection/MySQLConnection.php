@@ -20,15 +20,23 @@ class MySQLConnection implements Connection
         $this->pdo = new \PDO($dsn, $username, $password);
         $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 
+        // Verificar se o banco de dados existe
         $stmt = $this->pdo->query("SHOW DATABASES LIKE " . $this->pdo->quote($database));
         $db_exists = $stmt->fetchColumn();
 
-        if (!$db_exists && file_exists($migrateFile)) {
+        if (!$db_exists) {
+            // Criar o SCHEMA (DATABASE) se não existir
+            $this->pdo->exec("DROP SCHEMA IF EXISTS `$database`;");
+            $this->pdo->exec("CREATE SCHEMA IF NOT EXISTS `$database`;");
+            $this->pdo->exec("USE `$database`;");
+
+            // Executar o arquivo de migração
             $sql = file_get_contents($migrateFile);
-            $this->pdo->exec($sql);
+            $this->pdo->query($sql);
+        } else {
+            $this->pdo->exec("USE `$database`;");
         }
 
-        $this->pdo->exec("USE `$database`");
     }
 
     public static function fromConfig(array $config): MySQLConnection

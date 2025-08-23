@@ -1,7 +1,7 @@
 <?php
 namespace Core\Services;
 
-use Core\Database\Connection;
+use Core\Support\Connection\Connection;
 
 class Database
 {

@@ -1,12 +1,12 @@
 <?php
 return [
-    'default' => 'sqlite',
+    'default' => 'mysql',
     'mysql' => [
         'connection' => [
             'host' => 'localhost',
             'username' => 'root',
             'password' => 'root',
-            'database' => 'learning',
+            'database' => 'pw_database',
             'port' => 3306,
         ],
         'migration' => 'database/migrations/mysql.sql',
