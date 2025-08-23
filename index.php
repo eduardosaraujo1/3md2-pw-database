@@ -5,10 +5,10 @@ require 'core/functions.php';
 
 use Core\Http\Kernel;
 use Core\Http\Request;
-use Core\Services\ProviderService;
+use Core\Support\ProviderManager;
 
 // Bootstrap app service providers
-ProviderService::fromConfig()->load(
+ProviderManager::fromConfig()->load(
     container: app()
 );
 

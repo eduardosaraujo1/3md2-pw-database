@@ -50,6 +50,11 @@ if (!function_exists('config')) {
 }
 
 if (!function_exists('app')) {
+    /**
+     * Get the service container instance.
+     *
+     * /// O nome 'app' existe para manter consistência com o Laravel. Na prática, a função é `service_locator()` ou `sl()`
+     */
     function app(): \Core\Container\Container
     {
         return \Core\Container\Container::getInstance();

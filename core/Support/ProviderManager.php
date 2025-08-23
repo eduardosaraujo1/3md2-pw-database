@@ -1,8 +1,8 @@
 <?php
 
-namespace Core\Services;
+namespace Core\Support;
 
-class ProviderService
+class ProviderManager
 {
     public function __construct(
         private array $providers = []

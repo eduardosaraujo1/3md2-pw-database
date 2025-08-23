@@ -3,9 +3,9 @@
 namespace Core\Providers;
 
 use Core\Container\Container;
-use Core\Database\Connection;
-use Core\Database\MySQLConnection;
-use Core\Database\SQLiteConnection;
+use Core\Support\Connection\Connection;
+use Core\Support\Connection\MySQLConnection;
+use Core\Support\Connection\SQLiteConnection;
 use Core\Http\Kernel;
 use Core\Http\Request;
 use Core\Http\Response;
