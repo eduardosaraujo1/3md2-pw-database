@@ -136,29 +136,25 @@ $router->post('/signout', function (Request $request): Response {
 
 Uma rota pode retornar um array, uma string, ou um objeto _**Response**_ criado utilizando o método `response()` (leia a documentação de Request e Response para entender).
 
-Se o retorno for uma string, o framework vai criar um objeto Response presumindo que a string é um HTML. Se o retorno for um array, o PHP vai criar um objeto Response que retorna JSON
+Se o retorno for uma string, o framework vai criar um objeto Response presumindo que a string é um HTML. Se o retorno for um array, o framework vai criar um objeto Response que retorna JSON
 
 ### Service Container
 
-A função `app()->make()` é um gerador de objetos que utiliza o Service Container para criar e gerenciar dependências. De forma simples, é um objeto que guarda outros objetos da forma correta, seja com o padrão factory ou singleton.
+A função `app()->make()` é responsável por criar e gerenciar instâncias de objetos utilizando o Service Container. Esse container funciona como um gerenciador centralizado de dependências, garantindo que cada serviço seja criado da forma correta e, quando necessário, mantido como singleton (ou seja, criado uma única vez e reutilizado em todo o sistema).
 
-Por exemplo, a classe Database faz conexão com o banco de dados quando ela é criada. Se a gente utilizasse `new Database()` sempre que precisasse dessa conexão, ela seria realizada mais de uma vez, o que não é ideal. O Service Container vai criar o objeto dessa classe e guardar num array, então quando eu utilizar `app()->make(Database::class)`, o objeto dentro do array vai ser retornado ao em vez de um novo ser criado. Não importa quantas vezes `make` é chamado ou onde ele é executado, o Database só é criado uma vez (esse padrão se chama singleton).
+Por exemplo, a classe `Database` realiza a conexão com o banco de dados no momento em que é instanciada. Se utilizássemos `new Database()` diretamente em vários pontos do código, múltiplas conexões seriam abertas desnecessariamente. Com o Service Container, ao chamar `app()->make(Database::class)`, o container verifica se já existe uma instância criada; se sim, retorna essa instância, evitando duplicidade de conexões.
 
-Mas existe um problema, como um objeto Database é criado? Na versão de agosto de 2025 do framework, ele precisa ser criado assim:
-
-```php
-new Database(new MySQLConnection(host: "localhost", user: "root", password: "root", port: 3306, database: "pw_database", migrateFile: "database/migrations/mysql.sql"))
-```
-
-Para criar um `Database`, precisa de um `MySQLConnection` (ou `SQLiteConnection`), e para criar um `MySQLConnection`, precisa das credenciais do banco de dados. Como especificar pro Service Container onde achar essas credenciais e criar os objetos da forma certa?
-
-Os Providers resolvem esse problema. Eles são classes localizadas em `app/Providers`, e precisam ser registradas em `config/providers.php`. Com elas, o usuário pode escrever uma função que cria um desses objetos, e essa função vai ser executada quando o objeto precisar ser criado, seja uma ou várias vezes.
+A criação de objetos pode envolver dependências complexas. Por exemplo, para instanciar um `Database`, é necessário fornecer uma conexão, como `MySQLConnection` ou `SQLiteConnection`, que por sua vez depende das credenciais do banco de dados e da configuração do projeto. O Service Container resolve essas dependências automaticamente, utilizando configurações definidas em arquivos como `config/database.php`.
 
 #### Criando um Provider
 
+Os Providers são classes localizadas em `app/Providers` que instruem o Service Container sobre como criar cada serviço e suas dependências. Eles permitem que o desenvolvedor defina, por meio de funções, a lógica de criação dos objetos, garantindo flexibilidade e controle sobre o ciclo de vida dos serviços.
+
+Os Providers possuem dois métodos principais: `register` e `boot`. A principal diferença entre eles está na ordem de execução. Primeiro, o método `register` de todos os Providers é executado, seguido pelo método `boot` de cada um.
+
 O framework já vem com os providers de suas classes padrões (como Database), mas você pode registrar suas próprias classes no arquivo `app\Providers\AppServiceProvider.php`.
 
--   Exemplo de um Provider:
+-   Exemplo de um Provider para a classe Database:
 
 ```php
 namespace App\Providers;
@@ -174,23 +170,44 @@ class AppServiceProvider extends Provider
     {
         // $this->app->bind() executará a função novamente sempre que app()->make() for executado
         // $this->app->singleton() só executa a função uma vez e retorna o objeto final sempre que necessário
+
         $this->app->singleton(Connection::class, function(Container $container) {
-        // A função config lê as credenciais de conexão do MySQL do arquivo `config/database.php`
-        $config_banco = config("database");
-        if ($config_banco["default"] === "mysql") {
-            return new MySQLConnection(
-                
-            );
-        }
-    });
+            // A função config lê as credenciais de conexão do MySQL do arquivo `config/database.php`
+            $configBanco = config("database");
+            // A decisão entre o SQLite e o MySQL é feita nesse mesmo arquivo
+            $bancoEscolhido = $configBanco['default'];
+
+            if ($bancoEscolhido === "mysql") {
+                $credenciaisMysql = $configBanco['mysql'];
+
+                return new MySQLConnection(
+                    host: $credenciaisMysql['connection']['host'],
+                    username: $credenciaisMysql['connection']['username'],
+                    password: $credenciaisMysql['connection']['password'],
+                    database: $credenciaisMysql['connection']['database'],
+                    port: $credenciaisMysql['connection']['port'],
+                    migrateFile: $credenciaisMysql['migration']
+                );
+            } else if ($bancoEscolhido == "sqlite") {
+                $credenciaisSqlite = $configBanco['sqlite'];
+
+                return new SQLiteConnection(
+                    file: $credenciaisSqlite['file'],
+                    migrateFile: $credenciaisSqlite['migration'],
+                );
+            }
+        });
+
+        // O método acima decide se a conexão é MySQL ou SQLite, então é possível só pedir um objeto da classe Connection (classe abstrata), que automaticamente o tipo correto é dado.
         $this->app->singleton(Database::class, function (Container $container) {
             $connection = $container->make(Connection::class);
             return new Database($connection);
+        });
     }
 
     public function boot()
     {
-        //
+        // Será sempre executado após o método register
     }
 }
 ```
@@ -219,7 +236,7 @@ $router->post('/users', function () {
 
 #### Injeção de dependência
 
-O Service Container também permite injetar dependências. Por exemplo, ao registrar um Controller (veja a frente) no AppServiceProvider:
+O Service Container também permite injetar dependências. Por exemplo, é recomendado você criar um Controller (explicado a frente) e coloca-lo em um Provider.
 
 ```php
 $this->app->singleton(UserController::class, function (Container $container) {
@@ -228,7 +245,7 @@ $this->app->singleton(UserController::class, function (Container $container) {
 });
 ```
 
-Agora, ao usar `app()->make(UserController::class)`, o Service Container cria um Controller que já possui um objeto como dependência
+Dessa forma, você pode incluir objetos no construtor do Controller, e utiliza-los dentro dele, sem ter que se preocupar de onde esses objetos vieram.
 
 ### Controllers
 
