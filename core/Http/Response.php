@@ -47,7 +47,9 @@ class Response
     public function view(string $path, int $code = 200): self
     {
         $this->status = $code;
-        $viewPath = realpath(PROJECT_ROOT . "/resources/views/$path.html");
+        $viewPath = strpos($path, '.') === false
+            ? realpath(PROJECT_ROOT . "/resources/views/$path.html")
+            : realpath(PROJECT_ROOT . "/resources/views/$path");
 
         if ($viewPath && file_exists($viewPath)) {
             ob_start();
