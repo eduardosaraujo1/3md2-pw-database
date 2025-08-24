@@ -50,4 +50,20 @@ class Container
 
         return $factory($this);
     }
+
+    // ---
+
+    public function applyProviders(array $providers): void
+    {
+        $instances = [];
+        foreach ($providers as $provider) {
+            $providerInstance = new $provider($this);
+            $instances[$provider] = $providerInstance;
+            $providerInstance->register();
+        }
+
+        foreach ($providers as $provider) {
+            $instances[$provider]->boot();
+        }
+    }
 }

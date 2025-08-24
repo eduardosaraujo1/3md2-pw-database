@@ -28,18 +28,8 @@ class ProviderManager
         return new self($providers);
     }
 
-    public function load($container)
+    public function getProviders(): array
     {
-        $instances = [];
-        foreach ($this->providers as $provider) {
-            $providerInstance = new $provider($container);
-            $instances[$provider] = $providerInstance;
-            $providerInstance->register();
-        }
-
-        foreach ($this->providers as $provider) {
-            $providerInstance = $instances[$provider];
-            $providerInstance->boot();
-        }
+        return $this->providers;
     }
 }

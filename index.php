@@ -1,4 +1,5 @@
 <?php
+
 define('PROJECT_ROOT', __DIR__);
 ini_set('error_log', PROJECT_ROOT . '/errors.log');
 require 'core/autoload.php';
@@ -7,10 +8,11 @@ require 'core/functions.php';
 use Core\Http\Kernel;
 use Core\Http\Request;
 use Core\Support\ProviderManager;
+use Core\Container\Container;
 
-// Bootstrap app service providers
-ProviderManager::fromConfig()->load(
-    container: app()
+// Configure Service Container
+Container::getInstance()->applyProviders(
+    ProviderManager::fromConfig()->getProviders()
 );
 
 // Router
