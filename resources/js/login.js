@@ -13,7 +13,7 @@ $(() => {
         submitButton.prop("disabled", !isComplete);
     }
 
-    inputs.on("keydown", () => {
+    inputs.on("keyup change", () => {
         formController.pullFromDOM();
         updateButtonState();
     });
