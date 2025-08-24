@@ -66,8 +66,8 @@ Ao programar nosso app em PHP, podemos precisar das seguintes funcionalidades:
 
 -   **Retornar Views**: Ao acessar `http://localhost/home`, mostrar o HTML que está em `resources/views/home.html`
 -   **Retornar JSON**: Ao fazer um `<form>` com `action="/usuarios/criar"`, retornar uma resposta em JSON como `{"message": "Usuário criado com sucesso"}`
--   **Redirect**: Ao acessar `http://localhost/sair`, encerrar sessão o usuário e mandar ele para URL `http://localhost/login`, definindo o status 301.
--   **Retornar Erro em JSON**: Ao acessar `http://localhost/usuarios/criar` com um e-mail duplicado, retornar JSON falando `{"errors": ["Esse nome já está no banco de dados"]}` e definir o status 400.
+-   **Redirect**: Ao acessar `http://localhost/sair`, encerrar sessão o usuário e mandar ele para URL `http://localhost/login`, definindo o status HTTP 301.
+-   **Retornar Erro em JSON**: Ao acessar `http://localhost/usuarios/criar` com um e-mail duplicado, retornar JSON falando `{"errors": ["Esse nome já está no banco de dados"]}` e definir o status HTTP 400.
 
 Para cobrir essas necessidades, existe uma função chamada `response()`, que cria objetos da classe `Response` conforme os exemplos:
 
@@ -76,10 +76,10 @@ $router->get('/testar/response', function () {
     // Retornar texto direto
     $plainResponse = response(
         body: "<h1>HTML Direto</h1>",
-        status: 200 // Esse número é o código de resposta, igual 404 que significa "Not Found" - 200 significa "sucesso"
+        status: 200 // Esse número é o código de resposta HTTP, outro exemplo é o 404 que significa "Not Found" - 200 significa "sucesso"
     )
     // Retornar uma View
-    // Leia a documentação de "Frontend" para saber onde colocar 'home.html'
+    // Leia a documentação de "Frontend" para aprender onde colocar 'home.html'
     $viewResponse = response()->view('home.html');
 
     // Retornar JSON
@@ -134,17 +134,29 @@ $router->post('/signout', function (Request $request): Response {
 
 #### Retorno de uma rota
 
-Uma rota pode retornar um array, uma string, ou um objeto _**Response**_ criado utilizando o método `response()`.
+Uma rota pode retornar um array, uma string, ou um objeto _**Response**_ criado utilizando o método `response()` (leia a documentação de Request e Response para entender).
 
-Se o retorno for uma string, o PHP vai criar um objeto Response com HTML. Se o retorno for um array, o PHP vai criar um objeto Response com JSON
+Se o retorno for uma string, o framework vai criar um objeto Response presumindo que a string é um HTML. Se o retorno for um array, o PHP vai criar um objeto Response que retorna JSON
 
 ### Service Container
 
-A função `app()->make()` é um gerador de objetos que utiliza o Service Container para criar e gerenciar dependências. Ele permite configurar e registrar serviços através de Providers localizados em `app/Providers`.
+A função `app()->make()` é um gerador de objetos que utiliza o Service Container para criar e gerenciar dependências. De forma simples, é um objeto que guarda outros objetos da forma correta, seja com o padrão factory ou singleton.
+
+Por exemplo, a classe Database faz conexão com o banco de dados quando ela é criada. Se a gente utilizasse `new Database()` sempre que precisasse dessa conexão, ela seria realizada mais de uma vez, o que não é ideal. O Service Container vai criar o objeto dessa classe e guardar num array, então quando eu utilizar `app()->make(Database::class)`, o objeto dentro do array vai ser retornado ao em vez de um novo ser criado. Não importa quantas vezes `make` é chamado ou onde ele é executado, o Database só é criado uma vez (esse padrão se chama singleton).
+
+Mas existe um problema, como um objeto Database é criado? Na versão de agosto de 2025 do framework, ele precisa ser criado assim:
+
+```php
+new Database(new MySQLConnection(host: "localhost", user: "root", password: "root", port: 3306, database: "pw_database", migrateFile: "database/migrations/mysql.sql"))
+```
+
+Para criar um `Database`, precisa de um `MySQLConnection` (ou `SQLiteConnection`), e para criar um `MySQLConnection`, precisa das credenciais do banco de dados. Como especificar pro Service Container onde achar essas credenciais e criar os objetos da forma certa?
+
+Os Providers resolvem esse problema. Eles são classes localizadas em `app/Providers`, e precisam ser registradas em `config/providers.php`. Com elas, o usuário pode escrever uma função que cria um desses objetos, e essa função vai ser executada quando o objeto precisar ser criado, seja uma ou várias vezes.
 
 #### Criando um Provider
 
-Um Provider é uma classe responsável por registrar serviços no Service Container. [Falar dos métodos register() e boot()].
+O framework já vem com os providers de suas classes padrões (como Database), mas você pode registrar suas próprias classes no arquivo `app\Providers\AppServiceProvider.php`.
 
 -   Exemplo de um Provider:
 
@@ -153,8 +165,8 @@ namespace App\Providers;
 
 use Core\Container\Container;
 use Core\Providers\Provider;
-use App\Services\UserService;
-use App\Repositories\UserRepository;
+use Core\Support\Connection\Connection;
+use Core\Services\Database;
 
 class AppServiceProvider extends Provider
 {
@@ -162,10 +174,18 @@ class AppServiceProvider extends Provider
     {
         // $this->app->bind() executará a função novamente sempre que app()->make() for executado
         // $this->app->singleton() só executa a função uma vez e retorna o objeto final sempre que necessário
-        $this->app->singleton(UserService::class, function (Container $container) {
-            $userRepository = $container->make(UserRepository::class);
-            return new UserService(userRepository: $userRepository);
-        });
+        $this->app->singleton(Connection::class, function(Container $container) {
+        // A função config lê as credenciais de conexão do MySQL do arquivo `config/database.php`
+        $config_banco = config("database");
+        if ($config_banco["default"] === "mysql") {
+            return new MySQLConnection(
+                
+            );
+        }
+    });
+        $this->app->singleton(Database::class, function (Container $container) {
+            $connection = $container->make(Connection::class);
+            return new Database($connection);
     }
 
     public function boot()
@@ -175,7 +195,7 @@ class AppServiceProvider extends Provider
 }
 ```
 
-#### Registrando provider
+#### Registrando provider em outro arquivo
 
 É possível seguir o exemplo acima e editar diretamente o arquivo `app/Providers/AppServiceProvider.php`. Alternativamente, você pode criar um novo arquivo para atuar como Provider, adicionar seus binds nele e registrá-lo no arquivo `config/providers.php`.
 
