@@ -36,8 +36,11 @@ class Router
 
     public function handle(string $method, string $uri): callable
     {
-        if (isset($this->routes[$method][$uri])) {
-            return $this->routes[$method][$uri];
+        // Remover query string da URL para ver se a rota está correta
+        $uri_path = strtok($uri, '?');
+
+        if (isset($this->routes[$method][$uri_path])) {
+            return $this->routes[$method][$uri_path];
         }
 
         return function () {

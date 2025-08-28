@@ -38,3 +38,6 @@ $router->post('/users/update', function (Request $request) use ($userController)
 $router->post('/users/destroy', function (Request $request) use ($userController): Response {
     return $userController->destroy($request);
 });
+$router->get('/users/profile', function (Request $request) use ($userController) {
+    return $userController->profile_image($request);
+});

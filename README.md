@@ -5,7 +5,7 @@ Este projeto é um sistema de cadastro de contato com validação de dados em te
 ## Como Executar
 
 1. Clone o projeto na pasta `/xampp/htdocs`
-    - Importante: não coloque o projeto dentro de uma subpasta (como C:\xampp\htdocs\3md2-pw-database), pois isso quebra o sistema de URL.
+   - Importante: não coloque o projeto dentro de uma subpasta (como C:\xampp\htdocs\3md2-pw-database), pois isso quebra o sistema de URL.
 2. Opcionalmente, troque o banco de dados de `sqlite` para `mysql` pelo arquivo [config/database.php](./config/database.php)
 3. Inicie o servidor
 
@@ -21,7 +21,7 @@ Para fazer login, caso nenhuma alteração tenha sido feita em [mysql.sql](datab
 
 ## Esquema de Banco de Dados
 
--   **MySQL**:
+- **MySQL**:
 
 ```sql
 CREATE TABLE IF NOT EXISTS tb_contato(
@@ -38,7 +38,7 @@ INSERT INTO tb_contato VALUES
     (NULL, "Admin", "admin", "$2a$12$IYe6qvlevtzmCxu4zjkIIuLmrPMIvBwmhl3YApHE7fuxI9cadkesW", 'admin@gmail.com', '11951490211', NULL); -- Senha: admin
 ```
 
--   **SQLite**:
+- **SQLite**:
 
 ```sql
 CREATE TABLE IF NOT EXISTS tb_contato(
@@ -57,7 +57,9 @@ INSERT INTO tb_contato VALUES
 
 # Roadmap
 
--   [ ] Adicionar suporte para outros verbos HTTP (PUT/PATCH e DELETE)
--   [ ] Adicionar suporte para parâmetros de rotas (`/users/{id}`)
--   [ ] Criar diretório /public e endpoint /user/{id}/foto para melhorar segurança
--   [ ] Autenticação e autorização de ações via autenticação
+- [ ] Endpoint para pegar a imagem do usuário
+- [ ] Frontend com design de cards conforme imagem Concept.png
+- [ ] Adicionar suporte para outros verbos HTTP (PUT/PATCH e DELETE)
+- [ ] Adicionar suporte para parâmetros de rotas (`/users/{id}`)
+- [ ] Criar diretório /public e endpoint /user/{id}/foto para melhorar segurança
+- [ ] Autenticação e autorização de ações via autenticação

@@ -126,4 +126,32 @@ class UserController
 
         return response()->json(['status' => 'success']);
     }
+
+    public function profile_image(Request $request)
+    {
+        // Validate Data
+        $required = ['id'];
+        $dados = $request->only($required);
+
+        foreach ($required as $field) {
+            if (empty($dados[$field])) {
+                throw new UserException("O campo '{$field}' é obrigatório.");
+            }
+        }
+
+        // Validate 'id' is parsable as integer
+        if (filter_var($dados['id'], FILTER_VALIDATE_INT) === false) {
+            throw new UserException("O campo 'id' deve ser um número inteiro.");
+        }
+
+        // Get photo
+        [$photo_data, $mime_type] = $this->userService->getUserPhoto((int) $dados['id']);
+
+        return new Response(
+            body: $photo_data,
+            headers: [
+                'Content-Type' => $mime_type
+            ]
+        );
+    }
 }

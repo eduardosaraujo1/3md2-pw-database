@@ -2,6 +2,7 @@
 
 namespace Core\Services;
 
+use App\Exceptions\StorageException;
 use RuntimeException;
 
 class Storage
@@ -25,6 +26,23 @@ class Storage
         }
 
         return $this->getRelativePath($filename);
+    }
+
+    public function getFile(string $file_path)
+    {
+        $full_path = PROJECT_ROOT . $file_path;
+
+        $imagem_existe = file_exists($full_path);
+        if (!$imagem_existe) {
+            throw new StorageException("Foto '$full_path' não encontrada no sistema.");
+        }
+
+        $file_data = file_get_contents(realpath($full_path));
+        if (!$file_data) {
+            throw new StorageException("Erro desconhecido ao ler arquivo '$full_path'");
+        }
+
+        return $file_data;
     }
 
     private function ensureStorageDirectoryExists(): void
