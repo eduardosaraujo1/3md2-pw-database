@@ -145,13 +145,19 @@ class UserController
         }
 
         // Get photo
-        [$photo_data, $mime_type] = $this->userService->getUserPhoto((int) $dados['id']);
+        try {
+            [$photo_data, $mime_type] = $this->userService->getUserPhoto((int) $dados['id']);
 
-        return new Response(
-            body: $photo_data,
-            headers: [
-                'Content-Type' => $mime_type
-            ]
-        );
+            return new Response(
+                body: $photo_data,
+                headers: [
+                    'Content-Type' => $mime_type
+                ]
+            );
+        } catch (Exception $e) {
+            error_log($e);
+
+            return "";
+        }
     }
 }

@@ -30,11 +30,14 @@ class Storage
 
     public function getFile(string $file_path)
     {
+        if (empty(trim($file_path))) {
+            throw new StorageException("O caminho do arquivo não pode ser vazio.");
+        }
+
         $full_path = PROJECT_ROOT . $file_path;
 
-        $imagem_existe = file_exists($full_path);
-        if (!$imagem_existe) {
-            throw new StorageException("Foto '$full_path' não encontrada no sistema.");
+        if (!file_exists($full_path) || !is_file($full_path)) {
+            throw new StorageException("Arquivo '$full_path' não encontrado ou é um diretório.");
         }
 
         $file_data = file_get_contents(realpath($full_path));

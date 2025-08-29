@@ -1,5 +1,6 @@
 <?php
 
+// TODO: mover isso para um arquivo de configuração, chamado pelo Application::configure()->withProviders()->create(); Só o autoload.php fica aqui
 define('PROJECT_ROOT', __DIR__);
 ini_set('error_log', PROJECT_ROOT . '/errors.log');
 require 'core/autoload.php';

@@ -157,6 +157,7 @@ class UserService
         try {
             $photo_path = $user->foto ?? "";
             $photo_data = $this->imageStorageService->get($photo_path);
+
             // Retornar foto e mime_type da imagem a partir do caminho da foto (se for .png, mime type é image/png)
             if (str_ends_with($photo_path, ".png")) {
                 $mime_type = image_type_to_mime_type(IMAGETYPE_PNG);
@@ -174,10 +175,8 @@ class UserService
                 $mime_type
             ];
         } catch (Exception $e) {
-            // TODO: arrumar problema do file_get_contents no Storage exibir warning (esconder todos os warnings do PHP e só logar em silêncio no errors.log)
             $path = realpath(PROJECT_ROOT . "/resources/assets/blank.png");
             $photo_data = file_get_contents($path);
-            dd($photo_data);
 
             return [
                 $photo_data,
