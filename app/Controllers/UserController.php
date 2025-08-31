@@ -126,4 +126,33 @@ class UserController
 
         return response()->json(['status' => 'success']);
     }
+
+    public function profile_image(Request $request)
+    {
+        // Validate Data
+        $allowed = ['id'];
+        $dados = $request->only($allowed);
+
+        // Validate 'id' is parsable as integer
+        if (isset($dados['id']) && filter_var($dados['id'], FILTER_VALIDATE_INT) === false) {
+            throw new UserException("O campo 'id' deve ser um número inteiro.");
+        }
+
+        // Get photo
+        try {
+            $id = $dados['id'] ?? -1;
+            [$photo_data, $mime_type] = $this->userService->getUserPhoto((int) $id);
+
+            return new Response(
+                body: $photo_data,
+                headers: [
+                    'Content-Type' => $mime_type
+                ]
+            );
+        } catch (Exception $e) {
+            error_log($e);
+
+            return "";
+        }
+    }
 }

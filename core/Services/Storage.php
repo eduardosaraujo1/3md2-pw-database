@@ -2,6 +2,7 @@
 
 namespace Core\Services;
 
+use App\Exceptions\StorageException;
 use RuntimeException;
 
 class Storage
@@ -25,6 +26,26 @@ class Storage
         }
 
         return $this->getRelativePath($filename);
+    }
+
+    public function getFile(string $file_path)
+    {
+        if (empty(trim($file_path))) {
+            throw new StorageException("O caminho do arquivo não pode ser vazio.");
+        }
+
+        $full_path = PROJECT_ROOT . $file_path;
+
+        if (!file_exists($full_path) || !is_file($full_path)) {
+            throw new StorageException("Arquivo '$full_path' não encontrado ou é um diretório.");
+        }
+
+        $file_data = file_get_contents(realpath($full_path));
+        if (!$file_data) {
+            throw new StorageException("Erro desconhecido ao ler arquivo '$full_path'");
+        }
+
+        return $file_data;
     }
 
     private function ensureStorageDirectoryExists(): void

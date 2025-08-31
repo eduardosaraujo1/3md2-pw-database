@@ -13,4 +13,9 @@ abstract class Model
     {
         throw new \Exception("Method fromArray must be implemented in the child class.");
     }
+
+    public function toArray(): array
+    {
+        throw new \Exception("Method toArray must be implemented in the child class.");
+    }
 }

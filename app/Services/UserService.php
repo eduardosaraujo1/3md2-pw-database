@@ -5,10 +5,12 @@ namespace App\Services;
 use App\Domain\DTO\UserCreateDTO;
 use App\Domain\DTO\UserUpdateDTO;
 use App\Exceptions\QueryException;
+use App\Exceptions\StorageException;
 use App\Exceptions\UserException;
 use App\Models\User;
 use App\Repositories\UserRepository;
 use Core\Services\Session;
+use Exception;
 
 class UserService
 {
@@ -131,5 +133,64 @@ class UserService
     public function getAllUsers(): array
     {
         return $this->userRepository->all();
+    }
+
+    /**
+     * Lê o armazenamento interno e consulta o banco de dados para obter a foto do usuário em forma binária
+     *
+     * O primeiro valor de retorno é o binário da imagem
+     *
+     * O segundo valor de retorno é o mime_type (utilizado pelo response_header) da imagem
+     * @param int $user_id
+     * @throws \App\Exceptions\UserException
+     * @return string[]
+     */
+    /**
+     * Returns the default user photo data and mime type
+     * @return string[] Array containing [photo_data, mime_type]
+     */
+    private function getDefaultUserPhoto(): array
+    {
+        $path = realpath(PROJECT_ROOT . "/resources/assets/blank.png");
+        $photo_data = file_get_contents($path);
+
+        return [
+            $photo_data,
+            image_type_to_mime_type(IMAGETYPE_PNG)
+        ];
+    }
+
+    public function getUserPhoto(int $user_id)
+    {
+        try {
+            // Pegar caminho da foto a partir do ID do usuário
+            $user = $this->userRepository->findById($user_id);
+            if (!$user) {
+                throw new UserException("Usuário de id $user_id não encontrado.");
+            }
+
+            // Usar ImageStorageService para pegar dados da imagem
+            $photo_path = $user->foto ?? "";
+            $photo_data = $this->imageStorageService->get($photo_path);
+
+            // Retornar foto e mime_type da imagem a partir do caminho da foto (se for .png, mime type é image/png)
+            if (str_ends_with($photo_path, ".png")) {
+                $mime_type = image_type_to_mime_type(IMAGETYPE_PNG);
+            } else if (str_ends_with($photo_path, ".jpg") || str_ends_with($photo_path, ".jpeg")) {
+                $mime_type = image_type_to_mime_type(IMAGETYPE_JPEG);
+            } else if (str_ends_with($photo_path, ".gif")) {
+                $mime_type = image_type_to_mime_type(IMAGETYPE_GIF);
+            } else {
+                throw new UserException("Não foi possível ler a imagem armazenada: tipo não suportado. Contate o time de informática");
+            }
+
+            // Retornar
+            return [
+                $photo_data,
+                $mime_type
+            ];
+        } catch (Exception $e) {
+            return $this->getDefaultUserPhoto();
+        }
     }
 }

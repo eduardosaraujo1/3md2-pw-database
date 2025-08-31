@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\StorageException;
 use Core\Services\Storage;
 use RuntimeException;
 
@@ -32,6 +33,12 @@ class ImageStorageService
         $originalName = $file["name"];
 
         return $this->storage->storeFile($tmp, $originalName);
+    }
+
+    public function get(string $image_path): string
+    {
+        // Pegar dados da imagem a partir de StorageService
+        return $this->storage->getFile($image_path);
     }
 
     private function validateFile(array $file): void
