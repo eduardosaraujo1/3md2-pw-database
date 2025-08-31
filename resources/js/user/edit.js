@@ -77,15 +77,15 @@ $(() => {
     window.onEditPress = (event) => {
         // Get the target element
         const userId = $(event.currentTarget).data("target");
-        const userRow = $(`#userTable .js-id-field[data-target="${userId}"]`).closest("tr");
+        const userCard = $(`#userCards .js-id-field[data-target="${userId}"]`).closest(".col-md-6, .col-lg-4");
         formController.state = {
-            "edit-id": userRow.find(".js-id-field").text(),
-            "edit-nome": userRow.find(".js-nome-field").text(),
-            "edit-login": userRow.find(".js-login-field").text(),
-            "edit-email": userRow.find(".js-email-field").text(),
-            "edit-telefone": userRow.find(".js-telefone-field").text(),
+            "edit-id": userCard.find(".js-id-field").text(),
+            "edit-nome": userCard.find(".js-nome-field").text(),
+            "edit-login": userCard.find(".js-login-field").text(),
+            "edit-email": userCard.find(".js-email-field").text(),
+            "edit-telefone": userCard.find(".js-telefone-field").text(),
             "edit-senha": "",
-            "edit-confirm-senha": "",
+            "edit-confirmSenha": "",
         };
         formController.pushToDOM();
         refreshForm();

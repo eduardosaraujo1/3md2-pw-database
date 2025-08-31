@@ -62,33 +62,37 @@ class UserListController {
         return `
             <div class="col-md-6 col-lg-4">
                 <div class="card">
+                    <div class="card-header">
+                        <p class="text-muted small text-center fw-semibold mb-1 js-id-field" data-target="${user.id}">${user.id}</p>
+                    </div>
                     <div class="card-body text-center">
                         <div class="mb-3">
-                            <img src="${profileImageUrl}" 
-                                 class="rounded-circle" 
-                                 width="80" 
-                                 height="80" 
+                            <img src="${profileImageUrl}"
+                                 class="rounded-circle"
+                                 width="80"
+                                 height="80"
                                  alt="Avatar de ${user.nome}"
                                  onerror="this.src='/resources/assets/blank.png'">
                         </div>
                         <h6 class="card-title text-secondary mb-1 js-nome-field" data-target="${user.id}">${user.nome}</h6>
                         <p class="text-muted small mb-1 js-login-field" data-target="${user.id}">${user.login}</p>
-                        <p class="text-muted small mb-1 js-id-field" data-target="${user.id}">${user.id}</p>
                         <p class="text-muted small mb-1 js-email-field" data-target="${user.id}">${user.email}</p>
-                        <p class="text-muted small mb-3 js-telefone-field" data-target="${user.id}">${user.telefone}</p>
+                        <p class="text-muted small mb-1 js-telefone-field" data-target="${user.id}">${user.telefone}</p>
+                    </div>
+                    <div class="card-footer">
                         <div class="d-flex justify-content-center gap-2">
-                            <button type="button" 
-                                    class="btn btn-sm btn-danger js-btn-delete" 
-                                    title="Excluir" 
+                            <button type="button"
+                                    class="btn btn-sm btn-danger js-btn-delete"
+                                    title="Excluir"
                                     data-target="${user.id}">
                                 Apagar
                             </button>
-                            <button onclick="window.onEditPress(event)" 
-                                    data-bs-toggle="modal" 
-                                    data-bs-target="#editUserModal" 
-                                    type="button" 
-                                    class="btn btn-sm btn-warning js-btn-edit" 
-                                    title="Editar" 
+                            <button onclick="window.onEditPress(event)"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#editUserModal"
+                                    type="button"
+                                    class="btn btn-sm btn-warning js-btn-edit"
+                                    title="Editar"
                                     data-target="${user.id}">
                                 Editar
                             </button>
