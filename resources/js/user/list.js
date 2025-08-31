@@ -32,59 +32,82 @@ class UserRepository {
     }
 }
 
-class UserTableController {
-    constructor(tableId) {
-        this.tableId = tableId;
-        this.tableElement = $(`#${tableId}`);
+class UserListController {
+    constructor(containerId) {
+        this.containerId = containerId;
+        this.containerElement = $(`#${containerId}`);
     }
 
     /**
      * @param {User[]} users
      */
-    renderTable(users) {
-        const tbody = this.tableElement.find("tbody");
-        tbody.empty();
+    renderCards(users) {
+        // Clear existing cards
+        this.containerElement.empty();
 
         users.forEach((user) => {
-            const row = this.generateRowHTML(user);
-            tbody.append(row);
+            const card = this.generateCardHTML(user);
+            this.containerElement.append(card);
         });
     }
 
     /**
-     * Gera o HTML para uma linha da tabela de usuários.
+     * Gera o HTML para um card de usuário.
      * @param {User} user
      * @returns {string}
      */
-    generateRowHTML(user) {
+    generateCardHTML(user) {
+        const profileImageUrl = `/users/profile?id=${user.id}`;
+
         return `
-            <tr>
-                <td data-target="${user.id}" class="js-id-field">${user.id}</td>
-                <td data-target="${user.id}" class="js-nome-field">${user.nome}</td>
-                <td data-target="${user.id}" class="js-login-field">${user.login}</td>
-                <td data-target="${user.id}" class="js-email-field">${user.email}</td>
-                <td data-target="${user.id}" class="js-telefone-field">${user.telefone}</td>
-                <td>
-                    <button onclick="window.onEditPress(event)" data-bs-toggle="modal" data-bs-target="#editUserModal" type="button" class="btn btn-sm btn-primary me-1 js-btn-edit" title="Editar" data-target="${user.id}">
-                        <i class="bi bi-pencil"></i>
-                    </button>
-                    <button type="button" class="btn btn-sm btn-danger js-btn-delete" title="Excluir" data-target="${user.id}">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                </td>
-            </tr>
+            <div class="col-md-6 col-lg-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <div class="mb-3">
+                            <img src="${profileImageUrl}" 
+                                 class="rounded-circle" 
+                                 width="80" 
+                                 height="80" 
+                                 alt="Avatar de ${user.nome}"
+                                 onerror="this.src='/resources/assets/blank.png'">
+                        </div>
+                        <h6 class="card-title text-secondary mb-1 js-nome-field" data-target="${user.id}">${user.nome}</h6>
+                        <p class="text-muted small mb-1 js-login-field" data-target="${user.id}">${user.login}</p>
+                        <p class="text-muted small mb-1 js-id-field" data-target="${user.id}">${user.id}</p>
+                        <p class="text-muted small mb-1 js-email-field" data-target="${user.id}">${user.email}</p>
+                        <p class="text-muted small mb-3 js-telefone-field" data-target="${user.id}">${user.telefone}</p>
+                        <div class="d-flex justify-content-center gap-2">
+                            <button type="button" 
+                                    class="btn btn-sm btn-danger js-btn-delete" 
+                                    title="Excluir" 
+                                    data-target="${user.id}">
+                                Apagar
+                            </button>
+                            <button onclick="window.onEditPress(event)" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#editUserModal" 
+                                    type="button" 
+                                    class="btn btn-sm btn-warning js-btn-edit" 
+                                    title="Editar" 
+                                    data-target="${user.id}">
+                                Editar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         `;
     }
 }
 
 $(() => {
     const userRepository = new UserRepository();
-    const userTableController = new UserTableController("userTable", userRepository);
+    const userListController = new UserListController("userCards");
 
     async function loadUsers() {
         try {
             const users = await userRepository.fetchUsers();
-            userTableController.renderTable(users);
+            userListController.renderCards(users);
         } catch (error) {
             console.error("Erro ao carregar usuários:", error);
         }
@@ -95,7 +118,7 @@ $(() => {
     });
     loadUsers();
 
-    $("#userTable").on("click", ".js-btn-delete", async (event) => {
+    $("#userCards").on("click", ".js-btn-delete", async (event) => {
         const userId = $(event.currentTarget).data("target");
         if (!confirm("Tem certeza de que deseja excluir este usuário?")) {
             return;

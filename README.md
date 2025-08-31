@@ -57,8 +57,9 @@ INSERT INTO tb_contato VALUES
 
 # Roadmap
 
--   [ ] Endpoint para pegar a imagem do usuário
+-   [x] Endpoint para pegar a imagem do usuário
 -   [ ] Frontend com design de cards conforme imagem Concept.png
+-   [ ] Frontend com módulos ES6 no main.js
 -   [ ] Refatorar 'core' para ter pastas:
     -   Application - Lida com classe Container e classe Application, que vai carregar functions.php e definir PROJECT_ROOT
     -   Application/Providers - Local onde CoreServiceProvider.php e Provider.php fica
